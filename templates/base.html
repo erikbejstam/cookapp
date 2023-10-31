@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Microblogging app</title>
+        <link rel="stylesheet"
+              href="{{ url_for('static', filename='cookapp.css') }}">
+    </head>
+    <body>
+        <header>
+            <h1>Microblogging</h1>
+            <a href="{{ url_for('main.index') }}">Home</a>
+        </header>
+        <section class="content">
+            {% block content %}{% endblock %}
+        </section>
+        <footer><small>Developed for Web applications</small></footer>
+    </body>
+</html>
