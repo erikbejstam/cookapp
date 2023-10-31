@@ -1,0 +1,106 @@
+body {
+    background-color: #121212;
+    font-family: monospace, sans-serif;
+    color: whitesmoke;
+    padding: 0 2.5rem 0 2.5rem;
+    width: 80vw;
+    margin: auto;
+}
+
+a {
+    color: aquamarine;
+    text-decoration: none;
+    border-bottom: 2px dotted aquamarine;
+    transition: all;
+    opacity: 80%;
+}
+
+a:hover {
+    opacity: 100%;
+    transition: all;
+}
+
+.message,
+.alert {
+    background-color: #383838;
+    padding: 2rem;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+}
+
+.answers {
+    padding-left: 2rem;
+}
+
+.alert {
+    margin-top: 1rem;
+}
+
+.button,
+.add_button,
+.unfollow_button {
+    border-radius: 1rem;
+    background: #383838;
+    box-shadow: none;
+    transition: all;
+    opacity: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    /* Correction for a styles */
+    color: whitesmoke;
+    border: 0px dotted whitesmoke;
+}
+
+.button:hover,
+.add_button:hover,
+.reply_button:hover,
+.unfollow_button:hover {
+    opacity: 90%;
+    transition: all;
+    box-shadow: inset;
+}
+
+.add_button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 0.5rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+    border: 2px solid whitesmoke;
+    font-size: 2rem;
+}
+
+.reply_button {
+    border: 2px solid whitesmoke;
+    margin-left: 1rem;
+
+    border-radius: 0.5rem;
+    background: #383838;
+    box-shadow: none;
+    transition: all;
+    opacity: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    color: whitesmoke;
+}
+
+.unfollow_button {
+    margin-left: 1rem;
+}
+
+.answer_form,
+.user_header {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.margin-bottom {
+    margin-bottom: 2rem;
+}

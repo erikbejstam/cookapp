@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'post_template.html'%}
+
+<div class="answers">
+    <div class="message">
+        <form class="answer_form" action="{{url_for('main.new_post')}}" method="POST">
+            <textarea name="text" placeholder="What's your answer?" required></textarea>
+            <input type="hidden" name="response_to" value="{{ post.id }}">
+            <input class="reply_button" type="submit" value="Reply" />
+        </form>
+        <div class="metadata">
+            <a href="{{ url_for('main.user', user_id=current_user.id) }}"><span class="author">{{ current_user.name }}</span></a>
+            <span class="date">now</span>
+        </div>
+    </div>
+    {% include 'posts_template.html' %}</div>
+
+{% endblock %}

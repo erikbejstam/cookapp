@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{%block content%}
+<h2>Add a new post!</h2>
+<form action="{{url_for('main.new_post')}}" method="POST">
+    <div><label>Message:<br><textarea name="text" placeholder="What's on your mind?" required></textarea></label></div>
+    <div><input type="submit" value="Post" /></div>
+</form>
+{%endblock%}

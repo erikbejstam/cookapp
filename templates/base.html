@@ -2,14 +2,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Microblogging app</title>
+        <title>M Microblogging app</title>
         <link rel="stylesheet"
-              href="{{ url_for('static', filename='cookapp.css') }}">
+              href="{{ url_for('static', filename='microblog.css') }}">
     </head>
     <body>
         <header>
-            <h1>Microblogging</h1>
-            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="/"><h1>M Microblogging</h1></a>
         </header>
         <section class="content">
             {% block content %}{% endblock %}

@@ -1,7 +1,7 @@
-<div class="message">
+{% if post.response_to is none %}<a href="{{url_for('main.post', message_id=post.id)}}">{%endif%}<article class="message">
     <div class="text">{{ post.text}}</div>
     <div class="metadata">
-        <span class="author">{{ post.user.name }}</span>
+        <a href="{{ url_for('main.user', user_id=post.user.id) }}"><span class="author">{{ post.user.name }}</span></a>
         <span class="date">{{ post.timestamp }}</span>
     </div>
-</div>
+</article></a>

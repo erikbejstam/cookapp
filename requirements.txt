@@ -15,3 +15,4 @@ six
 SQLAlchemy
 typing_extensions
 python-dotenv
+mysqlclient

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Sign Up for M Microblogging</h2>
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+<form action="{{ url_for('auth.signup') }}" method="post">
+    <div><label>Email: <input type="email" name="email" required /></label></div>
+    <div><label>User name: <input type="text" name="username" required /></label></div>
+    <div><label>Password: <input type="password" name="password" required /></label></div>
+    <div><label>Repeat password: <input type="password" name="password_repeat" required /></label></div>
+    <div><input type="submit" value="Sign Up" /></div>
+</form>
+{% endblock %}
