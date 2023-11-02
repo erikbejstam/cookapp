@@ -4,7 +4,6 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 import os
 
-
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
@@ -18,7 +17,7 @@ def create_app(test_config=None):
     # Database connection
     app.config[
         "SQLALCHEMY_DATABASE_URI"
-    ] = f"mysql+mysqldb://{os.environ.get('DB_USER')}:{os.environ.get('DB_PASS')}@{os.environ.get('DB_HOST')}/{os.environ.get('DB_NAME')}"
+    ] = f"mysql+mysqldb://cookapp:bQcmD26UwRwurPA58X4nbz7u4QzzChmE@localhost/cookapp"
     db.init_app(app)
 
     login_manager = LoginManager()
