@@ -2,11 +2,11 @@
 
 {% block content %}
 <section>
-    <div class="user_header">
+    <div class="header-user">
         <h2><a>{{user.name}}</a>'s posts</h2>
         {% if follow_button == "follow" %}
         <form action="{{ url_for('main.follow', user_id=user.id) }}" method="post">
-            <input class="reply_button" type="submit" value="Follow">
+            <input class="button-reply" type="submit" value="Follow">
         </form>
         {% elif follow_button == "unfollow" %}
         <form action="{{ url_for('main.unfollow', user_id=user.id) }}" method="post">
@@ -14,7 +14,7 @@
         </form>
         {% endif %}
     </div>
-    <div class="margin-bottom">
+    <div class="margin-bottom-md">
     <div>
         <h3>Followers:</h3>
         {%for follower in user.followers%}

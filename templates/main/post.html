@@ -3,12 +3,12 @@
 {% block content %}
 {% include 'post_template.html'%}
 
-<div class="answers">
+<div class="answers-list">
     <div class="message">
-        <form class="answer_form" action="{{url_for('main.new_post')}}" method="POST">
+        <form class="form-answer" action="{{url_for('main.new_post')}}" method="POST">
             <textarea name="text" placeholder="What's your answer?" required></textarea>
             <input type="hidden" name="response_to" value="{{ post.id }}">
-            <input class="reply_button" type="submit" value="Reply" />
+            <input class="button-reply" type="submit" value="Reply" />
         </form>
         <div class="metadata">
             <a href="{{ url_for('main.user', user_id=current_user.id) }}"><span class="author">{{ current_user.name }}</span></a>
