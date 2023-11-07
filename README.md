@@ -1,4 +1,4 @@
-# web-apps-project
+# Cookapp
 
 ## Environment variables:
 ```
