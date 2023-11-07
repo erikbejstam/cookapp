@@ -19,6 +19,14 @@ app=create_app()
 with app.app_context():
     db.create_all()
 ```
+```
+# Change 'recipes' to your package's name below
+from recipes import db, create_app
+app = create_app()
+with app.app_context():
+    db.drop_all()
+    db.create_all()
+```
 
 ## Command to run the app
 ```flask --debug --app=cookapp run```
