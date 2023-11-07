@@ -2,11 +2,7 @@
 
 ## Environment variables:
 ```
-DB_USER=<user>
-DB_NAME=<dbname>
-DB_PASS=<pw>
-DB_HOST=<host>
-
+DB_CONNECTION_URL=mysql+mysqldb://<db_user>:<db_pass>@<db_host>/<db_name>
 SECRET_KEY=<key>
 ```
 
