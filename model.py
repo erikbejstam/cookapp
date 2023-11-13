@@ -21,6 +21,7 @@ class User(flask_login.UserMixin, db.Model):
     ratings = db.relationship("Rating", back_populates="user")
     photos = db.relationship("Photo", back_populates="user")
     messages = db.relationship("Message", back_populates="user")
+    bookmarks = db.relationship("Bookmark", back_populates="user")
     following = db.relationship(
         "User",
         secondary=FollowingAssociation.__table__,
@@ -51,6 +52,7 @@ class Recipe(db.Model):
     photos = db.relationship("Photo", back_populates="recipe")
     steps = db.relationship("Step", back_populates="recipe")
     ratings = db.relationship("Rating", back_populates="recipe")
+    bookmarks = db.relationship("Bookmark", back_populates="recipe")
 
 
 class Q_ingredient(db.Model):
@@ -99,6 +101,15 @@ class Photo(db.Model):
     recipe = db.relationship("Recipe", back_populates="photos")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     user = db.relationship("User", back_populates="photos")
+
+
+class Bookmark(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", back_populates="bookmarks")
+    recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False)
+    recipe = db.relationship("Recipe", back_populates="bookmarks")
 
 
 class Message(db.Model):

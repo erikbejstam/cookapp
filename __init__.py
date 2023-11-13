@@ -18,7 +18,7 @@ def create_app(test_config=None):
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
     # Database connection
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_CONNECTION_URL")
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqldb://cookapp:bQcmD26UwRwurPA58X4nbz7u4QzzChmE@localhost/cookapp" #os.environ.get("DB_CONNECTION_URL") 
     db.init_app(app)
 
     login_manager = LoginManager()
