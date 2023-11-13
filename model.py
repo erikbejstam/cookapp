@@ -41,7 +41,7 @@ class User(flask_login.UserMixin, db.Model):
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), nullable=False)
-    description = db.Column(db.String(512), nullable=False)  # too many less than 512, db.Text #there's no limit, better with the longer text
+    description = db.Column(db.Text, nullable=False) 
     persons = db.Column(db.Integer, nullable=False)
     estimated_time = db.Column(db.Integer, nullable=False)
 
@@ -76,8 +76,9 @@ class Ingredient(db.Model):
 
 class Step(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(512), nullable=False) # descriptsion db.Text
+    text = db.Column(db.Text, nullable=False)
     order = db.Column(db.Integer, nullable=False)
+    photos = db.relationship("Photo", back_populates="step")
 
     recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False)
     recipe = db.relationship("Recipe", back_populates="steps")
@@ -96,8 +97,10 @@ class Rating(db.Model):
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_extension = db.Column(db.String(8), nullable=False)
-                                                                                    # add step_id
-    recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False) # for the step , we can do sth with nullable, or can create a new 
+                                                            
+    step_id = db.Column(db.Integer, db.ForeignKey("step.id"), nullable=True)
+    step = db.relationship("Step", back_populates="photos")
+    recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=True) 
     recipe = db.relationship("Recipe", back_populates="photos")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     user = db.relationship("User", back_populates="photos")
@@ -116,7 +119,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     user = db.relationship("User", back_populates="messages")
-    text = db.Column(db.String(512), nullable=False)
+    text = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime(), nullable=False)
     response_to_id = db.Column(db.Integer, db.ForeignKey("message.id"))
     response_to = db.relationship(
