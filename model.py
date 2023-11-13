@@ -41,7 +41,7 @@ class User(flask_login.UserMixin, db.Model):
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(128), nullable=False)
-    description = db.Column(db.String(512), nullable=False)
+    description = db.Column(db.String(512), nullable=False)  # too many less than 512, db.Text #there's no limit, better with the longer text
     persons = db.Column(db.Integer, nullable=False)
     estimated_time = db.Column(db.Integer, nullable=False)
 
@@ -76,7 +76,7 @@ class Ingredient(db.Model):
 
 class Step(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(512), nullable=False)
+    text = db.Column(db.String(512), nullable=False) # descriptsion db.Text
     order = db.Column(db.Integer, nullable=False)
 
     recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False)
@@ -96,8 +96,8 @@ class Rating(db.Model):
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     file_extension = db.Column(db.String(8), nullable=False)
-
-    recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False)
+                                                                                    # add step_id
+    recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=False) # for the step , we can do sth with nullable, or can create a new 
     recipe = db.relationship("Recipe", back_populates="photos")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     user = db.relationship("User", back_populates="photos")
@@ -125,3 +125,6 @@ class Message(db.Model):
     responses = db.relationship(
         "Message", back_populates="response_to", remote_side=[response_to_id]
     )
+
+    # + alpha ) search function  , lists with the same ingridients
+    # link a photo to a steo=p, adding a new column, 
