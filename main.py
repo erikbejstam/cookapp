@@ -103,6 +103,10 @@ def new_post_post():
         else redirect(url_for("main.post", message_id=message.id))
     )
 
+@bp.route("/new_recipe")
+@login_required
+def new_recipe():
+    return render_template("main/new_recipe.html")
 
 @bp.route("/new_photo", methods=["POST"])
 @login_required

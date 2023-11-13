@@ -1,5 +1,5 @@
 <form action="{url_for('main.new_photo')}" method="POST" enctype="multipart/form-data">
     <input type="file" name="photo" accept="image/jpeg,image/png" required>
-    <input type="hidden" name="recipe_id" value="{{recipe.id}}">
+    <input type="hidden" name="recipe_id" value="">
     <input type="submit" value="Upload">
 </form>
