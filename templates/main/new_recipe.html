@@ -1,56 +1,137 @@
-{% extends 'base.html' %}
-{% block content %}
-  <div class="container">
-    <h2>Add a new recipe!</h2>
-    <form action="{{url_for('main.new_post')}}" method="POST">
-      <div class="mb-3">
-        <input type="text" class="form-control" name="title" placeholder="Kanelbullar" required>
-      </div>
-      <div class="mb-3">
-        <textarea class="form-control" name="description" placeholder="Amazing Swedish winter cinnamon buns" required></textarea>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Ingredients:</label>
-        <div id="ingredients-list">
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" name="igr_name[]" placeholder="Flour" required>
-            <input type="number" class="form-control" name="igr_amount[]" placeholder="500">
-            <input type="text" class="form-control" name="igr_unit[]" placeholder="g">
-            <button class="btn btn-outline-secondary add-ingredient" type="button">+</button>
-          </div>
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+  <h2>Add a new recipe!</h2>
+  <form
+    action="{{url_for('main.new_recipe')}}"
+    method="POST"
+    enctype="multipart/form-data"
+  >
+    <div class="mb-3">
+      <input
+        type="file"
+        name="recipe_photo"
+        class="form-control"
+        accept="image/jpeg,image/png"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="recipe_name"
+        placeholder="Kanelbullar"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <textarea
+        class="form-control"
+        name="recipe_description"
+        placeholder="Amazing Swedish winter cinnamon buns"
+        required
+      ></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">For how many people:</label>
+      <input
+        type="number"
+        class="form-control"
+        name="recipe_persons"
+        placeholder="4"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Estimated time in mins:</label>
+      <input
+        type="number"
+        class="form-control"
+        name="recipe_time"
+        placeholder="60"
+        required
+      />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Ingredients:</label>
+      <div id="ingredients-list">
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            name="ingredient_name[]"
+            placeholder="Flour"
+            required
+          />
+          <input
+            type="number"
+            class="form-control"
+            name="ingredient_quantity[]"
+            placeholder="500"
+          />
+          <input
+            type="text"
+            class="form-control"
+            name="ingredient_unit[]"
+            placeholder="g"
+          />
+          <button
+            class="btn btn-outline-secondary add-ingredient"
+            type="button"
+          >
+            +
+          </button>
         </div>
       </div>
-      <div class="mb-3">
-        <label>Steps:</label>
-        <div id="steps-list">
-          <div class="input-group mb-3">
-            <input type="number" class="form-control" name="step_order[]" placeholder="1">
-            <textarea class="form-control" name="step_text[]" placeholder="Mix all the ingredients" required></textarea>
-            <button class="btn btn-outline-secondary add-step" type="button">+</button>
-          </div>
+    </div>
+    <div class="mb-3">
+      <label>Steps:</label>
+      <div id="steps-list">
+        <div class="input-group mb-3">
+          <input
+            type="number"
+            class="form-control"
+            name="step_order[]"
+            placeholder="1"
+          />
+          <input
+            type="file"
+            name="step_photo[]"
+            class="form-control"
+            accept="image/jpeg,image/png"
+          />
+          <textarea
+            class="form-control"
+            name="step_text[]"
+            placeholder="Mix all the ingredients"
+            required
+          ></textarea>
+          <button class="btn btn-outline-secondary add-step" type="button">
+            +
+          </button>
         </div>
       </div>
-      <div><input type="submit" class="btn btn-primary" value="Post" /></div>
-    </form>
-  </div>
-  {% include 'components/new_photo.html' %}
-  
-  <script>
-    $(document).ready(function() {
-      $('.add-ingredient').click(function() {
-        var ingredientsList = $('#ingredients-list');
-        var newIngredient = ingredientsList.children().first().clone();
-        newIngredient.find('input').val('');
-        ingredientsList.append(newIngredient);
-      });
+    </div>
+    <div><input type="submit" class="btn btn-primary" value="Post" /></div>
+  </form>
+</div>
 
-      $('.add-step').click(function() {
-        var stepsList = $('#steps-list');
-        var newStep = stepsList.children().first().clone();
-        newStep.find('input[type=number]').val(stepsList.children().length + 1);
-        newStep.find('textarea').val('');
-        stepsList.append(newStep);
-      });
+<!-- <script>
+  $(document).ready(function () {
+    $(".add-ingredient").click(function () {
+      var ingredientsList = $("#ingredients-list");
+      var newIngredient = ingredientsList.children().first().clone();
+      newIngredient.find("input").val("");
+      ingredientsList.append(newIngredient);
     });
-  </script>
+
+    $(".add-step").click(function () {
+      var stepsList = $("#steps-list");
+      var newStep = stepsList.children().first().clone();
+      newStep.find("input[type=number]").val(stepsList.children().length + 1);
+      newStep.find("textarea").val("");
+      stepsList.append(newStep);
+    });
+  });
+</script> -->
 {% endblock %}

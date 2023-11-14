@@ -102,6 +102,7 @@ class Photo(db.Model):
     step = db.relationship("Step", back_populates="photos")
     recipe_id = db.Column(db.Integer, db.ForeignKey("recipe.id"), nullable=True) 
     recipe = db.relationship("Recipe", back_populates="photos")
+    
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     user = db.relationship("User", back_populates="photos")
 
