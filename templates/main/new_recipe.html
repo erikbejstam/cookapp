@@ -146,42 +146,36 @@
 
     function removeIngredient() {
       var ingredientsList = $("#ingredients-list");
-      if (ingredientsList.children().length === 2) {
-        if (!checkAllFilled("#ingredients-list")) {
-          $(this).parent().remove();
-        } else {
-          $(this)
-            .parent()
-            .find("input")
-            .each(function () {
-              $(this).val("");
-            });
-        }
-      } else if (ingredientsList.children().length > 1) {
+      if (ingredientsList.children().length > 1) {
         $(this).parent().remove();
+      }
+
+      if (
+        ingredientsList.children().length === 1 &&
+        checkAllFilled($("#ingredients-list").children().first().find("input"))
+      ) {
+        addIngredient();
       }
     }
 
     function checkAndAddIngredient() {
-      var allFilled = checkAllFilled("#ingredients-list");
+      var allFilled = checkAllFilled(
+        $("#ingredients-list").children().last().find("input")
+      );
 
       if (allFilled) {
         addIngredient();
       }
     }
 
-    function checkAllFilled(listElement) {
+    function checkAllFilled(selectedElement) {
       var allFilled = true;
-      $(listElement)
-        .children()
-        .last()
-        .find("input")
-        .each(function () {
-          if ($(this).val() === "") {
-            allFilled = false;
-            return false; // Breaks out of the .each loop
-          }
-        });
+      selectedElement.each(function () {
+        if ($(this).val() === "") {
+          allFilled = false;
+          return false; // Breaks out of the .each loop
+        }
+      });
       return allFilled;
     }
 
