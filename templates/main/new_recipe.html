@@ -76,10 +76,10 @@
             placeholder="g"
           />
           <button
-            class="btn btn-outline-secondary add-ingredient"
+            class="btn btn-outline-danger remove-ingredient"
             type="button"
           >
-            +
+            -
           </button>
         </div>
       </div>
@@ -134,4 +134,59 @@
     });
   });
 </script> -->
+
+<script>
+  $(document).ready(function () {
+    function addIngredient() {
+      var ingredientsList = $("#ingredients-list");
+      var newIngredient = ingredientsList.children().first().clone();
+      newIngredient.find("input").val("");
+      ingredientsList.append(newIngredient);
+    }
+
+    function removeIngredient() {
+      var ingredientsList = $("#ingredients-list");
+      if (ingredientsList.children().length === 2) {
+        if (!checkAllFilled("#ingredients-list")) {
+          $(this).parent().remove();
+        } else {
+          $(this)
+            .parent()
+            .find("input")
+            .each(function () {
+              $(this).val("");
+            });
+        }
+      } else if (ingredientsList.children().length > 1) {
+        $(this).parent().remove();
+      }
+    }
+
+    function checkAndAddIngredient() {
+      var allFilled = checkAllFilled("#ingredients-list");
+
+      if (allFilled) {
+        addIngredient();
+      }
+    }
+
+    function checkAllFilled(listElement) {
+      var allFilled = true;
+      $(listElement)
+        .children()
+        .last()
+        .find("input")
+        .each(function () {
+          if ($(this).val() === "") {
+            allFilled = false;
+            return false; // Breaks out of the .each loop
+          }
+        });
+      return allFilled;
+    }
+
+    $("#ingredients-list").on("input change", "input", checkAndAddIngredient);
+    $("#ingredients-list").on("click", ".remove-ingredient", removeIngredient);
+  });
+</script>
 {% endblock %}
