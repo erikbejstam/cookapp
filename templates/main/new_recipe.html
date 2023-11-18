@@ -93,10 +93,10 @@
             class="form-control"
             name="step_order[]"
             placeholder="1"
+            value="1"
           />
           <input
             type="file"
-            name="step_photo[]"
             class="form-control"
             accept="image/jpeg,image/png"
           />
@@ -106,8 +106,8 @@
             placeholder="Mix all the ingredients"
             required
           ></textarea>
-          <button class="btn btn-outline-secondary add-step" type="button">
-            +
+          <button class="btn btn-outline-danger remove-step" type="button">
+            -
           </button>
         </div>
       </div>
@@ -116,62 +116,59 @@
   </form>
 </div>
 
-<!-- <script>
-  $(document).ready(function () {
-    $(".add-ingredient").click(function () {
-      var ingredientsList = $("#ingredients-list");
-      var newIngredient = ingredientsList.children().first().clone();
-      newIngredient.find("input").val("");
-      ingredientsList.append(newIngredient);
-    });
-
-    $(".add-step").click(function () {
-      var stepsList = $("#steps-list");
-      var newStep = stepsList.children().first().clone();
-      newStep.find("input[type=number]").val(stepsList.children().length + 1);
-      newStep.find("textarea").val("");
-      stepsList.append(newStep);
-    });
-  });
-</script> -->
-
 <script>
   $(document).ready(function () {
     function addIngredient() {
       var ingredientsList = $("#ingredients-list");
       var newIngredient = ingredientsList.children().first().clone();
-      newIngredient.find("input").val("");
+      newIngredient
+        .find("input")
+        .val("")
+        .removeAttr("name")
+        .removeAttr("required");
       ingredientsList.append(newIngredient);
     }
 
-    function removeIngredient() {
-      var ingredientsList = $("#ingredients-list");
-      if (ingredientsList.children().length > 1) {
-        $(this).parent().remove();
+    function addStep() {
+      var stepsList = $("#steps-list");
+      var newStep = stepsList.children().first().clone();
+      newStep
+        .find("input, textarea")
+        .val("")
+        .removeAttr("name")
+        .removeAttr("required");
+      newStep.find("input[type=number]").val(stepsList.children().length + 1);
+      stepsList.append(newStep);
+    }
+
+    function removeItem(elementList, addFunction, clickedElement) {
+      var itemList = $(elementList);
+      if (itemList.children().length > 1) {
+        clickedElement.parent().remove();
       }
 
-      if (
-        ingredientsList.children().length === 1 &&
-        checkAllFilled($("#ingredients-list").children().first().find("input"))
-      ) {
-        addIngredient();
+      if (itemList.children().length === 1 && checkAllFilled(elementList)) {
+        addFunction();
       }
     }
 
-    function checkAndAddIngredient() {
-      var allFilled = checkAllFilled(
-        $("#ingredients-list").children().last().find("input")
-      );
+    function checkAndAddItem(elementList, addFunction, event) {
+      var allFilled = checkAllFilled(elementList);
 
       if (allFilled) {
-        addIngredient();
+        addFunction();
       }
     }
 
-    function checkAllFilled(selectedElement) {
+    function checkAllFilled(elementList) {
+      var selectedElement = $(elementList)
+        .children()
+        .last()
+        .find("input,textarea")
+        .not("input[type=file]");
       var allFilled = true;
-      selectedElement.each(function () {
-        if ($(this).val() === "") {
+      selectedElement.each(function (index, element) {
+        if ($(element).val() === "") {
           allFilled = false;
           return false; // Breaks out of the .each loop
         }
@@ -179,8 +176,65 @@
       return allFilled;
     }
 
-    $("#ingredients-list").on("input change", "input", checkAndAddIngredient);
-    $("#ingredients-list").on("click", ".remove-ingredient", removeIngredient);
+    function updateAttributes(element) {
+      var allInputs = element.find("input,textarea");
+      var checkInputs = element.find("input,textarea").not("input[type=file]");
+      var allFilled =
+        checkInputs.filter(function () {
+          return this.value.trim() === "";
+        }).length === 0;
+
+      if (allFilled) {
+        allInputs.each(function () {
+          var inputType = $(this).attr("type");
+          if (
+            inputType === "text" ||
+            inputType === "number" ||
+            this.tagName.toLowerCase() === "textarea"
+          ) {
+            var nameAttribute = "";
+            if (element.parent().attr("id") === "ingredients-list") {
+              nameAttribute =
+                inputType === "number"
+                  ? "ingredient_quantity[]"
+                  : "ingredient_name[]";
+              $(this).attr({ name: nameAttribute, required: "true" });
+            } else if (element.parent().attr("id") === "steps-list") {
+              if (inputType === "number") {
+                nameAttribute = "step_order[]";
+              } else if (this.tagName.toLowerCase() === "textarea") {
+                nameAttribute = "step_text[]";
+              } else if (
+                inputType === "file" &&
+                this.files &&
+                this.files.length > 0
+              ) {
+                nameAttribute = "step_photo[]";
+              }
+              $(this).attr({ name: nameAttribute, required: "true" });
+            }
+          }
+        });
+      } else {
+        allInputs.removeAttr("name").removeAttr("required");
+      }
+    }
+
+    $("#ingredients-list").on("input change", "input", function (event) {
+      checkAndAddItem("#ingredients-list", addIngredient, event);
+      updateAttributes($(this).closest(".input-group"));
+    });
+    $("#ingredients-list").on("click", ".remove-ingredient", function () {
+      removeItem("#ingredients-list", addIngredient, $(this));
+    });
+
+    $("#steps-list").on("input change", "input, textarea", function (event) {
+      checkAndAddItem("#steps-list", addStep, event);
+      updateAttributes($(this).closest(".input-group"));
+    });
+    $("#steps-list").on("click", ".remove-step", function () {
+      removeItem("#steps-list", addStep, $(this));
+    });
   });
 </script>
 {% endblock %}
