@@ -177,7 +177,10 @@
     }
 
     function updateAttributes(element) {
-      var allInputs = element.find("input,textarea");
+      var allInputs = element.find(
+        "input[type=file], input[type=number], input[type=text], textarea"
+      );
+
       var checkInputs = element.find("input,textarea").not("input[type=file]");
       var allFilled =
         checkInputs.filter(function () {
@@ -187,31 +190,29 @@
       if (allFilled) {
         allInputs.each(function () {
           var inputType = $(this).attr("type");
-          if (
-            inputType === "text" ||
-            inputType === "number" ||
-            this.tagName.toLowerCase() === "textarea"
-          ) {
-            var nameAttribute = "";
-            if (element.parent().attr("id") === "ingredients-list") {
-              nameAttribute =
-                inputType === "number"
-                  ? "ingredient_quantity[]"
-                  : "ingredient_name[]";
-              $(this).attr({ name: nameAttribute, required: "true" });
-            } else if (element.parent().attr("id") === "steps-list") {
-              if (inputType === "number") {
-                nameAttribute = "step_order[]";
-              } else if (this.tagName.toLowerCase() === "textarea") {
-                nameAttribute = "step_text[]";
-              } else if (
-                inputType === "file" &&
-                this.files &&
-                this.files.length > 0
-              ) {
+          var nameAttribute = "";
+          if (element.parent().attr("id") === "ingredients-list") {
+            nameAttribute =
+              inputType === "number"
+                ? "ingredient_quantity[]"
+                : "ingredient_name[]";
+            $(this).attr({ name: nameAttribute, required: "required" });
+          } else if (element.parent().attr("id") === "steps-list") {
+            if (inputType === "number") {
+              nameAttribute = "step_order[]";
+            } else if (this.tagName.toLowerCase() === "textarea") {
+              nameAttribute = "step_text[]";
+            } else if (inputType === "file") {
+              if (this.files.length > 0) {
                 nameAttribute = "step_photo[]";
+                $(this).attr({ name: nameAttribute });
+              } else {
+                $(this).removeAttr("name");
               }
-              $(this).attr({ name: nameAttribute, required: "true" });
+            }
+
+            if (inputType !== "file") {
+              $(this).attr({ name: nameAttribute, required: "required" });
             }
           }
         });
