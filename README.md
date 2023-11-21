@@ -1,12 +1,8 @@
-# web-apps-project
+# Cookapp
 
 ## Environment variables:
 ```
-DB_USER=<user>
-DB_NAME=<dbname>
-DB_PASS=<pw>
-DB_HOST=<host>
-
+DB_CONNECTION_URL=mysql+mysqldb://<db_user>:<db_pass>@<db_host>/<db_name>
 SECRET_KEY=<key>
 ```
 
@@ -21,6 +17,14 @@ SECRET_KEY=<key>
 from cookapp import db, create_app 
 app=create_app()
 with app.app_context():
+    db.create_all()
+```
+```
+# Change 'recipes' to your package's name below
+from cookapp import db, create_app
+app = create_app()
+with app.app_context():
+    db.drop_all()
     db.create_all()
 ```
 

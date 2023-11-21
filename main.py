@@ -1,7 +1,16 @@
 import datetime
+import pathlib
 import dateutil.tz
 from flask_login import current_user, login_required
-from flask import Blueprint, render_template, redirect, request, url_for, abort
+from flask import (
+    Blueprint,
+    current_app,
+    render_template,
+    redirect,
+    request,
+    url_for,
+    abort,
+)
 from . import model, db
 
 bp = Blueprint("main", __name__)
@@ -92,6 +101,150 @@ def new_post_post():
         redirect(url_for("main.post", message_id=message.response_to_id))
         if response_to_id != None
         else redirect(url_for("main.post", message_id=message.id))
+    )
+
+
+@bp.route("/new_recipe")
+@login_required
+def new_recipe():
+    return render_template("main/new_recipe.html")
+
+
+@bp.route("/new_recipe", methods=["POST"])
+@login_required
+def new_recipe_post():
+    recipe_name = request.form.get("recipe_name")
+    recipe_description = request.form.get("recipe_description")
+    recipe_persons = request.form.get("recipe_persons")
+    recipe_time = request.form.get("recipe_time")
+
+    recipe = model.Recipe(
+        title=recipe_name,
+        description=recipe_description,
+        persons=recipe_persons,
+        estimated_time=recipe_time,
+        user=current_user,
+    )
+
+    db.session.add(recipe)
+    db.session.commit()
+
+    recipe_photo = request.files.get("recipe_photo")
+    store_photo(recipe_photo, recipe_id=recipe.id)
+
+    ingredient_names = request.form.getlist("ingredient_name[]")
+    ingredient_quantities = request.form.getlist("ingredient_quantity[]")
+    ingredient_units = request.form.getlist("ingredient_unit[]")
+    print(ingredient_names)
+    ingredients = zip(ingredient_names, ingredient_quantities, ingredient_units)
+
+    for ingredient_name, ingredient_quantity, ingredient_unit in ingredients:
+        if not ingredient_name or not ingredient_quantity:
+            abort(400, f"Please provide an ingredient")
+        ingredient = model.Ingredient(name=ingredient_name)
+        db.session.add(ingredient)
+        db.session.commit()
+
+        q_ingredient = model.Q_ingredient(
+            recipe_id=recipe.id,
+            ingredient_id=ingredient.id,
+            amount=ingredient_quantity,
+            unit=ingredient_unit,
+        )
+        db.session.add(q_ingredient)
+        db.session.commit()
+
+    step_orders = request.form.getlist("step_order[]")
+    step_photos = request.files.getlist("step_photo[]")
+    step_texts = request.form.getlist("step_text[]")
+    print(step_texts)
+    steps = zip(step_orders, step_photos, step_texts)
+    print(steps)
+    
+    for step_order, step_photo, step_text in steps:
+        if not step_text or not step_order:
+            abort(400, f"Please provide a step")
+        step = model.Step(order=step_order, text=step_text, recipe_id=recipe.id)
+        db.session.add(step)
+        db.session.commit()
+        store_photo(step_photo, step_id=step.id)
+
+    return redirect(url_for("main.index"))
+
+
+def store_photo(uploaded_file, recipe_id=None, step_id=None):
+    if not uploaded_file:
+        abort(400, f"Please upload a media file")
+
+    content_type = uploaded_file.content_type
+    if content_type == "image/png":
+        file_extension = "png"
+    elif content_type == "image/jpeg":
+        file_extension = "jpg"
+    else:
+        abort(400, f"Unsupported file type {content_type}")
+
+    photo = model.Photo(
+        user=current_user,
+        recipe_id=recipe_id,
+        step_id=step_id,
+        file_extension=file_extension,
+    )
+    db.session.add(photo)
+    db.session.commit()
+
+    path = (
+        pathlib.Path(current_app.root_path)
+        / "static"
+        / "photos"
+        / f"photo-{photo.id}.{file_extension}"
+    )
+    uploaded_file.save(path)
+    return photo
+
+
+@bp.route("/new_photo", methods=["POST"])
+@login_required
+def new_photo_post():
+    recipe_id = request.form.get("recipe_id")
+    step_id = request.form.get("step_id")
+
+    if recipe_id == None and step_id == None:
+        abort(400, f"Please provide to what the picture refers to")
+
+    uploaded_file = request.files["photo"]
+
+    if uploaded_file.filename != "":
+        abort(400, f"Please upload a media file")
+
+    content_type = uploaded_file.content_type
+    if content_type == "image/png":
+        file_extension = "png"
+    elif content_type == "image/jpeg":
+        file_extension = "jpg"
+    else:
+        abort(400, f"Unsupported file type {content_type}")
+
+    recipe = db.get_or_404(model.Recipe, recipe_id) if recipe_id != None else None
+    step = db.get_or_404(model.Step, step_id) if step_id != None else None
+    photo = model.Photo(
+        user=current_user, recipe=recipe, step=step, file_extension=file_extension
+    )
+    db.session.add(photo)
+    db.session.commit()
+
+    path = (
+        pathlib.Path(current_app.root_path)
+        / "static"
+        / "photos"
+        / f"photo-{photo.id}.{file_extension}"
+    )
+    uploaded_file.save(path)
+
+    return (
+        redirect(url_for("main.index"))  # TODO: change depending on our structure
+        if recipe_id != None
+        else redirect(url_for("main.index"))
     )
 
 

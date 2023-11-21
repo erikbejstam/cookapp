@@ -1,0 +1,6 @@
+<form action="{url_for('main.new_photo')}" method="POST" enctype="multipart/form-data">
+    <input type="file" name="photo" accept="image/jpeg,image/png" required>
+    {%if recipe %}<input type="hidden" name="recipe_id" value="{{recipe.id}}"> {%endif%}
+   {% if step %} <input type="hidden" name="step_id" value="{{step.id}}"> {%endif%}
+    <input type="submit" value="Upload">
+</form>
