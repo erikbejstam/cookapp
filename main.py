@@ -12,6 +12,7 @@ from flask import (
     abort,
 )
 from . import model, db
+import re
 
 bp = Blueprint("main", __name__)
 
@@ -155,21 +156,38 @@ def new_recipe_post():
         db.session.commit()
 
     step_orders = request.form.getlist("step_order[]")
-    step_photos = request.files.getlist("step_photo[]")
     step_texts = request.form.getlist("step_text[]")
+    step_photos = extract_step_photos(request)
+
     print(step_texts)
-    steps = zip(step_orders, step_photos, step_texts)
+    steps = zip(step_orders, step_texts)
     print(steps)
-    
-    for step_order, step_photo, step_text in steps:
+
+    current_step = 0
+    for step_order, step_text in steps:
         if not step_text or not step_order:
             abort(400, f"Please provide a step")
         step = model.Step(order=step_order, text=step_text, recipe_id=recipe.id)
         db.session.add(step)
         db.session.commit()
-        store_photo(step_photo, step_id=step.id)
+
+        if str(current_step) in step_photos.keys():
+            step_photo = step_photos[str(current_step)]
+            store_photo(step_photo, step_id=step.id)
+        current_step += 1
 
     return redirect(url_for("main.index"))
+
+
+def extract_step_photos(request):
+    step_photos = {}
+    for key in request.files.keys():
+        if key.startswith("step_photo["):
+            file = request.files[key]
+            if file.filename != "":
+                number = re.search(r"\d+", key).group()
+                step_photos[number] = file
+    return step_photos
 
 
 def store_photo(uploaded_file, recipe_id=None, step_id=None):

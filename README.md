@@ -28,6 +28,19 @@ with app.app_context():
     db.create_all()
 ```
 
+```
+from cookapp import db, create_app
+from sqlalchemy.sql import text
+app = create_app()
+with app.app_context():
+    db.session.execute(text('SET FOREIGN_KEY_CHECKS=0;'))
+    db.session.commit()
+    db.drop_all()
+    db.session.execute(text('SET FOREIGN_KEY_CHECKS=1;'))
+    db.session.commit()
+    db.create_all()
+```
+
 ## Command to run the app
 ```flask --debug --app=cookapp run```
 
