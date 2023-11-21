@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <h1 class="text-center mb-3">Taste and Share</h1>
+    <div class="row">
+        <div class="col-12">
+            <form class="d-flex" role="search" action="{{ url_for('main.search_recipes') }}" method="get">
+                <input class="form-control me-2" type="search" placeholder="Search for recipes" aria-label="Search" name="q">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-4">
+        {% for recipe in recipes %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <img src="{{ url_for('static', filename='photos/' ~ recipe.photos[0].id ~ '.' ~ recipe.photos[0].file_extension) }}" class="card-img-top" alt="{{ recipe.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+                    <p class="card-text">{{ recipe.description }}</p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Time: {{ recipe.estimated_time }} mins</li>
+                        <li class="list-group-item">Ingredients: <br> {{ recipe.q_ingredients|join(', ') }}</li>
+                    </ul>
+                    <div class="card-body">
+                        <a href="{{ url_for('main.view_recipe', recipe_id=recipe.id) }}" class="card-link">View Recipe</a>
+                        <small class="text-muted">{{ recipe.bookmarks|length }} people saved this recipe</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
