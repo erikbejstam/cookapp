@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% for bookmark in bookmarks %}
+
+    <a href="{{ url_for('main.recipe', recipe_id=bookmark.recipe.id) }}">{{bookmark.recipe}}</a> 
+
+{% endfor %}
+
+<!-- preliminär fil, behöver redigera -->

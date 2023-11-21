@@ -119,3 +119,21 @@ def unfollow(user_id):
     db.session.commit()
 
     return redirect(url_for("main.user", user_id=user_id))
+
+@bp.route("/bookmarks/<int:user_id>")
+@login_required
+def bookmarks(user_id):
+    user = db.get_or_404(model.User, user_id)
+    if current_user.id != user_id:
+        abort(403, "Forbidden action")
+
+    query = db.select(model.Bookmark).where(user.id == user_id)
+    bookmarks = db.session.execute(query).scalars().all()
+
+    return render_template("main/bookmarks.html")
+
+@bp.route("/recipe/<int:recipe_id>")
+def recipe(recipe_id):
+    user = db.get_or_404(model.Recipe, recipe_id)
+
+    return render_template("main/recipe.html")
