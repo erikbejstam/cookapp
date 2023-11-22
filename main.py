@@ -291,12 +291,35 @@ def unfollow(user_id):
 
     return redirect(url_for("main.user", user_id=user_id))
 
-@bp.route("/create_bookmark/<int:recipe_id>")
+@bp.route("/create_bookmark/<int:recipe_id>", methods=["POST"])
 @login_required
 def create_bookmark(recipe_id):
     
-    current_user.bookmarks.append(recipe)
-    return redirect(url_for("main.bookmarks"))
+    query = db.select(model.Recipe).where(model.Recipe.id==recipe_id)
+    recipe = db.session.execute(query).scalar()
+
+    if recipe_id not in [bookmark.recipe_id for bookmark in current_user.bookmarks]:
+        bookmark = model.Bookmark(
+            user_id = current_user.id,
+            recipe_id = recipe.id,
+        )
+        current_user.bookmarks.append(bookmark)
+        db.session.commit()
+
+    return redirect(url_for("main.bookmarks", user_id=current_user.id))
+
+@bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"]) #this function is not working rn
+@login_required
+def remove_bookmark(bookmark_id):
+    
+    query = db.select(model.Bookmark).where(model.Bookmark.id==bookmark_id)
+    bookmark = db.session.execute(query).scalar()
+
+    if bookmark.id in [bookmark.id for bookmark in current_user.bookmarks]:
+        current_user.bookmarks.remove(bookmark)
+        db.session.commit()
+
+    return redirect(url_for("main.bookmarks", user_id=current_user.id))
 
 @bp.route("/bookmarks/<int:user_id>")
 @login_required

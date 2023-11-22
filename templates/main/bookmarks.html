@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
 
-{% for bookmark in bookmarks %}
+{% block content %}
+    <h2>Bookmarks</h2>
 
-    <a href="{{ url_for('main.recipe', recipe_id=bookmark.recipe.id) }}">{{bookmark.recipe}}</a> 
+    {% for bookmark in bookmarks %}
 
-{% endfor %}
+        <a href="{{ url_for('main.recipe', recipe_id=bookmark.recipe.id) }}">{{bookmark.recipe.title}}</a> 
 
-<!-- preliminär fil, behöver redigera -->
+        <form action="{{url_for('main.remove_bookmark', bookmark_id=bookmark.id)}}" method="post">
+            <input class="remove_bookmark_button" type="submit" value="Remove bookmark">
+        </form>  
+        <br>
+        
+    {% endfor %} <br><br>
+
+
+{% endblock %}
+
