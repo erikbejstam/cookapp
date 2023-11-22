@@ -58,20 +58,20 @@
         <div class="input-group mb-3">
           <input
             type="text"
-            class="form-control"
+            class="form-control ingredient_name"
             name="ingredient_name[]"
             placeholder="Flour"
             required
           />
           <input
             type="number"
-            class="form-control"
+            class="form-control ingredient_quantity"
             name="ingredient_quantity[]"
             placeholder="500"
           />
           <input
             type="text"
-            class="form-control"
+            class="form-control ingredient_unit"
             name="ingredient_unit[]"
             placeholder="g"
           />
@@ -137,7 +137,9 @@
         .val("")
         .removeAttr("name")
         .removeAttr("required");
-      newStep.find("input[type=number]").val(stepsList.children().length + 1);
+
+      var counter = stepsList.children().length + 1;
+      newStep.find("input[type=number]").val(counter);
       stepsList.append(newStep);
     }
 
@@ -190,12 +192,16 @@
       if (allFilled) {
         allInputs.each(function () {
           var inputType = $(this).attr("type");
+          var classes = $(this).attr("class");
           var nameAttribute = "";
           if (element.parent().attr("id") === "ingredients-list") {
-            nameAttribute =
-              inputType === "number"
-                ? "ingredient_quantity[]"
-                : "ingredient_name[]";
+            if (inputType === "number") {
+              nameAttribute = "ingredient_quantity[]";
+            } else if (classes.includes("ingredient_unit")) {
+              nameAttribute = "ingredient_unit[]";
+            } else if (classes.includes("ingredient_name")) {
+              nameAttribute = "ingredient_name[]";
+            }
             $(this).attr({ name: nameAttribute, required: "required" });
           } else if (element.parent().attr("id") === "steps-list") {
             if (inputType === "number") {
@@ -204,7 +210,8 @@
               nameAttribute = "step_text[]";
             } else if (inputType === "file") {
               if (this.files.length > 0) {
-                nameAttribute = "step_photo[]";
+                matchingItem = element.parent().children().index(element);
+                nameAttribute = `step_photo[${matchingItem}]`;
                 $(this).attr({ name: nameAttribute });
               } else {
                 $(this).removeAttr("name");
@@ -221,6 +228,21 @@
       }
     }
 
+    function updatePhotoIndex() {
+      var photoInputs = $("#steps-list").find("input[type=file]");
+      photoInputs.each(function (index, element) {
+        var nameAttribute = `step_photo[${index}]`;
+        $(this).attr({ name: nameAttribute });
+      });
+    }
+
+    function updateOrderIndex() {
+      var orderInputs = $("#steps-list").find("input[type=number]");
+      orderInputs.each(function (index, element) {
+        $(this).val(index + 1);
+      });
+    }
+
     $("#ingredients-list").on("input change", "input", function (event) {
       checkAndAddItem("#ingredients-list", addIngredient, event);
       updateAttributes($(this).closest(".input-group"));
@@ -235,6 +257,8 @@
     });
     $("#steps-list").on("click", ".remove-step", function () {
       removeItem("#steps-list", addStep, $(this));
+      updatePhotoIndex();
+      updateOrderIndex();
     });
   });
 </script>
