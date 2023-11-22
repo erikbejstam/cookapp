@@ -273,6 +273,13 @@ def unfollow(user_id):
 
     return redirect(url_for("main.user", user_id=user_id))
 
+@bp.route("/create_bookmark/<int:recipe_id>")
+@login_required
+def create_bookmark(recipe_id):
+    
+    current_user.bookmarks.append(recipe)
+    return redirect(url_for("main.bookmarks"))
+
 @bp.route("/bookmarks/<int:user_id>")
 @login_required
 def bookmarks(user_id):
@@ -283,10 +290,10 @@ def bookmarks(user_id):
     query = db.select(model.Bookmark).where(user.id == user_id)
     bookmarks = db.session.execute(query).scalars().all()
 
-    return render_template("main/bookmarks.html")
+    return render_template("main/bookmarks.html", bookmarks=bookmarks)
 
 @bp.route("/recipe/<int:recipe_id>")
 def recipe(recipe_id):
-    user = db.get_or_404(model.Recipe, recipe_id)
+    recipe = db.get_or_404(model.Recipe, recipe_id)
 
-    return render_template("main/recipe.html")
+    return render_template("main/recipe.html", recipe=recipe)
