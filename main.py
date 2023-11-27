@@ -13,6 +13,7 @@ from flask import (
 )
 from . import model, db
 import re
+from sqlalchemy import func 
 
 bp = Blueprint("main", __name__)
 
@@ -30,6 +31,19 @@ def index():
         .order_by(model.Message.timestamp.desc())
         .limit(10)
     )
+
+    top_recipes_query = (
+        db.session.query(
+            model.Recipe,
+            func.count(model.Bookmark.id).label('total_bookmarks')
+        )
+        .join(model.Bookmark, model.Bookmark.recipe_id == model.Recipe.id)
+        .group_by(model.Recipe.id)
+        .order_by(func.count(Bookmark.id).desc())
+        .limit(10)
+        .all()
+    )
+
     posts = db.session.execute(query).scalars().all()
     return render_template("main/index.html", posts=posts)
 
