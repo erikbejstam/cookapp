@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form action="{{url_for('main.create_bookmark', recipe_id=recipe.id)}}" method="post">
+        <button id="bookmark" name="Bookmark" value="Bookmark">Bookmark</button>
+    </form>
+
+    {{recipe.title}} <br>
+    {{recipe.description}} <br>
+
+{% endblock %}

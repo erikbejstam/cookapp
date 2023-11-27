@@ -304,3 +304,51 @@ def unfollow(user_id):
     db.session.commit()
 
     return redirect(url_for("main.user", user_id=user_id))
+
+@bp.route("/create_bookmark/<int:recipe_id>", methods=["POST"])
+@login_required
+def create_bookmark(recipe_id):
+    
+    query = db.select(model.Recipe).where(model.Recipe.id==recipe_id)
+    recipe = db.session.execute(query).scalar()
+
+    if recipe_id not in [bookmark.recipe_id for bookmark in current_user.bookmarks]:
+        bookmark = model.Bookmark(
+            user_id = current_user.id,
+            recipe_id = recipe.id,
+        )
+        current_user.bookmarks.append(bookmark)
+        db.session.commit()
+
+    return redirect(url_for("main.bookmarks", user_id=current_user.id))
+
+@bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"]) #this function is not working rn
+@login_required
+def remove_bookmark(bookmark_id):
+    
+    query = db.select(model.Bookmark).where(model.Bookmark.id==bookmark_id)
+    bookmark = db.session.execute(query).scalar()
+
+    if bookmark.id in [bookmark.id for bookmark in current_user.bookmarks]:
+        current_user.bookmarks.remove(bookmark)
+        db.session.commit()
+
+    return redirect(url_for("main.bookmarks", user_id=current_user.id))
+
+@bp.route("/bookmarks/<int:user_id>")
+@login_required
+def bookmarks(user_id):
+    user = db.get_or_404(model.User, user_id)
+    if current_user.id != user_id:
+        abort(403, "Forbidden action")
+
+    query = db.select(model.Bookmark).where(user.id == user_id)
+    bookmarks = db.session.execute(query).scalars().all()
+
+    return render_template("main/bookmarks.html", bookmarks=bookmarks)
+
+@bp.route("/recipe/<int:recipe_id>")
+def recipe(recipe_id):
+    recipe = db.get_or_404(model.Recipe, recipe_id)
+
+    return render_template("main/recipe.html", recipe=recipe)

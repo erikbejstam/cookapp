@@ -13,6 +13,9 @@
             <input class="unfollow_button" type="submit" value="Unfollow">
         </form>
         {% endif %}
+
+        <a href="{{url_for('main.bookmarks', user_id=user.id)}}">Bookmarks</a>
+        
     </div>
     <div class="margin-bottom-md">
     <div>
