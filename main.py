@@ -44,6 +44,13 @@ def user(user_id):
         .order_by(model.Message.timestamp.desc())
     )
     user_posts = db.session.execute(query).scalars().all()
+    query_recipes = (
+        db.select(model.Recipe)
+        .filter_by(user_id=user_id)
+        .order_by(model.Recipe.timestamp.desc())
+    )
+    user_recipes = db.session.execute(query_recipes).scalars().all()
+
 
     follow = "none"
     if current_user.id == user.id:
@@ -56,7 +63,7 @@ def user(user_id):
         follow = "none"
 
     return render_template(
-        "main/user.html", user=user, posts=user_posts, follow_button=follow
+        "main/user.html", user=user, recipes=user_recipes, posts=user_posts, follow_button=follow
     )
 
 
@@ -120,6 +127,7 @@ def new_recipe_post():
     recipe_time = request.form.get("recipe_time")
 
     recipe = model.Recipe(
+        timestamp = datetime.datetime.now(dateutil.tz.tzlocal()),
         title=recipe_name,
         description=recipe_description,
         persons=recipe_persons,
@@ -308,7 +316,7 @@ def create_bookmark(recipe_id):
 
     return redirect(url_for("main.bookmarks", user_id=current_user.id))
 
-@bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"]) #this function is not working rn
+@bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"]) 
 @login_required
 def remove_bookmark(bookmark_id):
     bookmark = db.get_or_404(model.Bookmark, bookmark_id)
