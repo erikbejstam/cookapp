@@ -11,6 +11,7 @@ from flask import (
     url_for,
     abort,
 )
+from sqlalchemy import func
 from . import model, db
 import re
 
@@ -20,18 +21,21 @@ bp = Blueprint("main", __name__)
 @bp.route("/")
 @login_required
 def index():
-    followers = db.aliased(model.User)
     query = (
-        db.select(model.Message)
-        .join(model.User)
-        .join(followers, model.User.followers)
-        .where(followers.id == current_user.id)
-        .where(model.Message.response_to == None)
-        .order_by(model.Message.timestamp.desc())
+        db.select(
+            model.Recipe,
+            func.sum(model.Rating.value).label("total_rating"),
+        )
+        .outerjoin(model.Rating)
+        .join(model.Photo)
+        .where(model.Photo.step_id == None)
+        .group_by(model.Recipe.id)
+        .order_by(func.sum(model.Rating.value).desc())
         .limit(10)
     )
-    posts = db.session.execute(query).scalars().all()
-    return render_template("main/index.html", posts=posts)
+    recipes = db.session.execute(query).scalars().all()
+    print(recipes[0].photos[0].file_extension)
+    return render_template("main/index.html", recipes=recipes)
 
 
 @bp.route("/user/<int:user_id>")
@@ -51,7 +55,6 @@ def user(user_id):
     )
     user_recipes = db.session.execute(query_recipes).scalars().all()
 
-
     follow = "none"
     if current_user.id == user.id:
         follow = "none"
@@ -63,7 +66,11 @@ def user(user_id):
         follow = "none"
 
     return render_template(
-        "main/user.html", user=user, recipes=user_recipes, posts=user_posts, follow_button=follow
+        "main/user.html",
+        user=user,
+        recipes=user_recipes,
+        posts=user_posts,
+        follow_button=follow,
     )
 
 
@@ -111,6 +118,30 @@ def new_post_post():
         else redirect(url_for("main.post", message_id=message.id))
     )
 
+@bp.route("/rate/<int:recipe_id>", methods=["POST"])
+@login_required
+def rate(recipe_id):
+    value = request.form.get("value")
+    if value not in [-1,1]:
+        abort(400, "Invalid rating value")
+
+    existing_rating = model.Rating.query.filter_by(
+        user_id=current_user.id,
+        recipe_id=recipe_id,
+    ).first()
+    
+    if existing_rating == value:
+        return redirect(url_for("main.index"))
+    else:
+        rating = model.Rating(
+            user_id=current_user.id,
+            recipe_id=recipe_id,
+            value=value,
+        )
+        db.session.add(rating)
+    
+    db.session.commit()
+    return redirect(url_for("main.index"))
 
 @bp.route("/new_recipe")
 @login_required
@@ -127,7 +158,7 @@ def new_recipe_post():
     recipe_time = request.form.get("recipe_time")
 
     recipe = model.Recipe(
-        timestamp = datetime.datetime.now(dateutil.tz.tzlocal()),
+        timestamp=datetime.datetime.now(dateutil.tz.tzlocal()),
         title=recipe_name,
         description=recipe_description,
         persons=recipe_persons,
@@ -299,30 +330,32 @@ def unfollow(user_id):
 
     return redirect(url_for("main.user", user_id=user_id))
 
+
 @bp.route("/create_bookmark/<int:recipe_id>", methods=["POST"])
 @login_required
 def create_bookmark(recipe_id):
-    
-    query = db.select(model.Recipe).where(model.Recipe.id==recipe_id)
+    query = db.select(model.Recipe).where(model.Recipe.id == recipe_id)
     recipe = db.session.execute(query).scalar()
 
     if recipe_id not in [bookmark.recipe_id for bookmark in current_user.bookmarks]:
         bookmark = model.Bookmark(
-            user_id = current_user.id,
-            recipe_id = recipe.id,
+            user_id=current_user.id,
+            recipe_id=recipe.id,
         )
         current_user.bookmarks.append(bookmark)
         db.session.commit()
 
     return redirect(url_for("main.bookmarks", user_id=current_user.id))
 
-@bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"]) 
+
+@bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"])
 @login_required
 def remove_bookmark(bookmark_id):
     bookmark = db.get_or_404(model.Bookmark, bookmark_id)
     db.session.delete(bookmark)
     db.session.commit()
     return redirect(url_for("main.bookmarks", user_id=current_user.id))
+
 
 @bp.route("/bookmarks/<int:user_id>")
 @login_required
@@ -333,6 +366,7 @@ def bookmarks(user_id):
     query = db.select(model.Bookmark).where(user.id == user_id)
     bookmarks = db.session.execute(query).scalars().all()
     return render_template("main/bookmarks.html", bookmarks=bookmarks)
+
 
 @bp.route("/recipe/<int:recipe_id>")
 def recipe(recipe_id):

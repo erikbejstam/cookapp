@@ -1,0 +1,27 @@
+<article class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-4 thumb-recipe">
+      <img
+        src="/static/photos/photo-{{recipe.photos[0].id}}.{{recipe.photos[0].file_extension}}"
+        alt="{{ recipe.title }} image"
+        class="img-fluid rounded-start"
+      />
+    </div>
+    <div class="col-md-8">
+      <a
+        href="{{url_for('main.recipe', recipe_id=recipe.id)}}"
+        class="stretched-link"
+      >
+        <div class="card-body">
+          <h2 class="card-title">{{ recipe.title}}</h2>
+          <div class="metadata">
+            <a href="{{ url_for('main.user', user_id=recipe.user.id) }}"
+              ><span class="author">{{ recipe.user.name }}</span></a
+            >
+            <span class="date">{{ recipe.timestamp }}</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</article>

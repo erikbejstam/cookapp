@@ -1,0 +1,19 @@
+<!-- voting_panel.html -->
+
+<form action="{{ url_for('rate', recipe_id=recipe.id) }}" method="POST">
+    <div class="voting-panel">
+      <!-- Upvote button -->
+      <button name="value" value="1" type="submit" class="btn btn-light vote-btn">
+        <i class="fa{{ 's' if user_has_upvoted else 'r' }} fa-chevron-up"></i>
+      </button>
+  
+      <!-- Current rating display -->
+      <span class="current-rating">0</span>
+  
+      <!-- Downvote button -->
+      <button name="value" value="-1" type="submit" class="btn btn-light vote-btn">
+        <i class="fa{{ 's' if user_has_downvoted else 'r' }} fa-chevron-down"></i>
+      </button>
+    </div>
+  </form>
+  

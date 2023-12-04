@@ -8,7 +8,7 @@
         <a href="{{ url_for('main.recipe', recipe_id=bookmark.recipe.id) }}">{{bookmark.recipe.title}}</a> 
 
         <form action="{{url_for('main.remove_bookmark', bookmark_id=bookmark.id)}}" method="post">
-            <input class="remove_bookmark_button" type="submit" value="Remove bookmark">
+            <input class="btn btn-danger" type="submit" value="Remove bookmark">
         </form>  
         <br>
         

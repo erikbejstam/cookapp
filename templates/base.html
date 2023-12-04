@@ -6,7 +6,10 @@
     <!-- required by bootstrap for responsiveness -->
     <title>Cookapp</title>
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+    />
 
     <script
       src="https://code.jquery.com/jquery-3.7.1.min.js"
@@ -20,13 +23,18 @@
       crossorigin="anonymous"
     />
     <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <link
       rel="stylesheet"
       href="{{ url_for('static', filename='microblog.css') }}"
     />
   </head>
   <body>
     <header>
-      <a href="/"><h1>M Microblogging</h1></a>
+      <a href="/"><h1>Cookapp</h1></a>
     </header>
     <section class="content">{% block content %}{% endblock %}</section>
     <footer><small>Developed for Web applications</small></footer>
