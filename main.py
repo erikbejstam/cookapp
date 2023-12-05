@@ -37,7 +37,14 @@ def index():
     for row in result:
         recipe = db.get_or_404(model.Recipe, row[0])
         total_rating = row[1]
-        recipes.append((recipe, total_rating))
+        current_user_id = current_user.id if current_user.is_authenticated else None
+        user_vote = db.session.execute(
+            db.select(model.Rating.value).where(model.Rating.user_id == current_user_id)
+        ).scalar()
+        if user_vote == None:
+            user_vote = 0
+
+        recipes.append((recipe, total_rating, user_vote))
     # import pdb; pdb.set_trace()
     if len(recipes) < 10:
         number_of_recipes = 10 - len(recipes)
@@ -50,7 +57,7 @@ def index():
         )
         rateless_recipes = db.session.execute(query).scalars().all()
         for recipe in rateless_recipes:
-            recipes.append((recipe, 0))
+            recipes.append((recipe, 0, 0))
 
     recipes.sort(key=lambda x: x[1], reverse=True)
 
@@ -152,7 +159,6 @@ def rate(recipe_id):
 
     if existing_rating != None:
         db.session.delete(existing_rating)
-        flash("Rating successfully removed!")
 
     if existing_rating == None or existing_rating.value != int(value):
         rating = model.Rating(
