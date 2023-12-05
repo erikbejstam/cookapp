@@ -44,6 +44,9 @@ with app.app_context():
 ## Command to run the app
 ```flask --debug --app=cookapp run```
 
+## Code to debug inside python code
+```import pdb; pdb.set_trace()```
+
 ## Guide for Installing "mysqlclient" dependency
 ```
 # Assume you are activating Python 3 venv

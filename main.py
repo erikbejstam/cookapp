@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 from flask import (
     Blueprint,
     current_app,
+    flash,
     render_template,
     redirect,
     request,
@@ -19,22 +20,40 @@ bp = Blueprint("main", __name__)
 
 
 @bp.route("/")
-@login_required
 def index():
     query = (
         db.select(
-            model.Recipe,
+            model.Rating.recipe_id,
             func.sum(model.Rating.value).label("total_rating"),
         )
-        .outerjoin(model.Rating)
-        .join(model.Photo)
-        .where(model.Photo.step_id == None)
-        .group_by(model.Recipe.id)
+        .group_by(model.Rating.recipe_id)
         .order_by(func.sum(model.Rating.value).desc())
         .limit(10)
     )
-    recipes = db.session.execute(query).scalars().all()
-    print(recipes[0].photos[0].file_extension)
+
+    result = db.session.execute(query)
+
+    recipes = []
+    for row in result:
+        recipe = db.get_or_404(model.Recipe, row[0])
+        total_rating = row[1]
+        recipes.append((recipe, total_rating))
+    # import pdb; pdb.set_trace()
+    if len(recipes) < 10:
+        number_of_recipes = 10 - len(recipes)
+        query = (
+            db.select(model.Recipe)
+            .outerjoin(model.Rating)
+            .where(model.Rating.recipe_id == None)
+            .order_by(model.Recipe.timestamp.desc())
+            .limit(number_of_recipes)
+        )
+        rateless_recipes = db.session.execute(query).scalars().all()
+        for recipe in rateless_recipes:
+            recipes.append((recipe, 0))
+
+    recipes.sort(key=lambda x: x[1], reverse=True)
+
     return render_template("main/index.html", recipes=recipes)
 
 
@@ -118,30 +137,34 @@ def new_post_post():
         else redirect(url_for("main.post", message_id=message.id))
     )
 
+
 @bp.route("/rate/<int:recipe_id>", methods=["POST"])
 @login_required
 def rate(recipe_id):
     value = request.form.get("value")
-    if value not in [-1,1]:
+    if value not in ["-1", "1"]:
         abort(400, "Invalid rating value")
 
     existing_rating = model.Rating.query.filter_by(
         user_id=current_user.id,
         recipe_id=recipe_id,
     ).first()
-    
-    if existing_rating == value:
-        return redirect(url_for("main.index"))
-    else:
+
+    if existing_rating != None:
+        db.session.delete(existing_rating)
+        flash("Rating successfully removed!")
+
+    if existing_rating == None or existing_rating.value != int(value):
         rating = model.Rating(
             user_id=current_user.id,
             recipe_id=recipe_id,
             value=value,
         )
         db.session.add(rating)
-    
+
     db.session.commit()
-    return redirect(url_for("main.index"))
+    return redirect(request.referrer or url_for("main.index"))
+
 
 @bp.route("/new_recipe")
 @login_required
