@@ -1,35 +1,36 @@
 /* Base Styles */
 body {
-    background-color: #121212;
-    color: whitesmoke;
-    font-family: monospace, sans-serif;
-    margin: auto;
-    padding: 0 2.5rem;
-    width: 80vw;
+  background-color: #d9d9d9;
+  color: #121212;
+  font-family: monospace, sans-serif;
+  margin: auto;
+  padding: 0 2.5rem;
+  width: 80vw;
+  font-size: 1rem;
 }
 
 /* Link Styles */
 a {
-    color: aquamarine;
-    text-decoration: none;
-    border-bottom: 2px dotted aquamarine;
-    opacity: 0.8;
-    transition: opacity 0.3s; /* Specify the property you are transitioning */
+  color: #dc143c;
+  text-decoration: none;
+  border-bottom: 2px dotted #dc143c;
+  opacity: 0.8;
+  transition: opacity 0.3s; /* Specify the property you are transitioning */
 }
 
 a:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* Utility Classes */
 .margin-bottom-md {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .flex-center-align {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 /* Button Styles */
@@ -37,64 +38,102 @@ a:hover {
 .button-add,
 .button-reply,
 .button-unfollow {
-    background: #383838;
-    border: none;
-    border-radius: 1rem;
-    color: whitesmoke;
-    padding: 0.5rem 1rem;
-    transition: opacity 0.3s;
+  background: #383838;
+  border: none;
+  border-radius: 1rem;
+  color: whitesmoke;
+  padding: 0.5rem 1rem;
+  transition: opacity 0.3s;
 }
 
 .button:hover,
 .button-add:hover,
 .button-reply:hover,
 .button-unfollow:hover {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 /* Special Button Styles */
 .button-add {
-    border: 2px solid whitesmoke;
-    bottom: 2rem;
-    font-size: 2rem;
-    padding: 0.5rem 1.5rem;
-    position: fixed;
-    right: 2rem;
+  border: 2px solid whitesmoke;
+  bottom: 2rem;
+  font-size: 2rem;
+  padding: 0.5rem 1.5rem;
+  position: fixed;
+  right: 2rem;
 }
 
 .button-reply {
-    border: 2px solid whitesmoke;
-    border-radius: 0.5rem;
-    margin-left: 1rem;
+  border: 2px solid whitesmoke;
+  border-radius: 0.5rem;
+  margin-left: 1rem;
 }
 
 .button-unfollow {
-    margin-left: 1rem;
+  margin-left: 1rem;
 }
 
 /* Message and Alert Styles */
 .message,
 .alert {
-    background-color: #383838;
-    border-radius: 1rem;
-    margin-bottom: 1rem;
-    padding: 2rem;
+  background-color: #383838;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  padding: 2rem;
 }
 
 /* Additional Alert Style */
 .alert {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 /* List Styles */
 .answers-list {
-    padding-left: 2rem;
+  padding-left: 2rem;
 }
 
 /* Form and Header Styles */
 .form-answer,
 .header-user {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.thumb-recipe img {
+  object-fit: cover; /* Do not scale the image */
+  object-position: center; /* Center the image within the element */
+  width: 100%;
+  height: 250px;
+}
+
+/* Rating Panel */
+/* voting_panel.css */
+
+.vote-btn i {
+  /* default style for arrows */
+}
+
+.vote-btn:hover i {
+  /* style when hovered */
+}
+
+.fa-chevron-up {
+  /* style for up arrow */
+}
+
+.fa-chevron-down {
+  /* style for down arrow */
+}
+
+.fa {
+  font-size: 24px; /* adjust size as necessary */
+}
+
+.fas {
+  /* solid style (filled) */
+}
+
+.far {
+  /* regular style (not filled) */
 }

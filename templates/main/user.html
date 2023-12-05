@@ -3,33 +3,42 @@
 {% block content %}
 <section>
     <div class="header-user">
-        <h2><a>{{user.name}}</a>'s posts</h2>
+        <h2><a>{{user.name}}</a>'s page</h2>
         {% if follow_button == "follow" %}
-        <form action="{{ url_for('main.follow', user_id=user.id) }}" method="post">
-            <input class="button-reply" type="submit" value="Follow">
-        </form>
+            <form action="{{ url_for('main.follow', user_id=user.id) }}" method="post">
+                <input class="button-reply" type="submit" value="Follow">
+            </form>
         {% elif follow_button == "unfollow" %}
-        <form action="{{ url_for('main.unfollow', user_id=user.id) }}" method="post">
-            <input class="unfollow_button" type="submit" value="Unfollow">
-        </form>
+            <form action="{{ url_for('main.unfollow', user_id=user.id) }}" method="post">
+                <input class="unfollow_button" type="submit" value="Unfollow">
+            </form>
         {% endif %}
+    </div>
+    <div><a href="{{url_for('main.bookmarks', user_id=user.id)}}">Bookmarks</a></div>
+    <br>
 
-        <a href="{{url_for('main.bookmarks', user_id=user.id)}}">Bookmarks</a>
-        
+    <div>
+        <h3>{{user.name}}'s Recipes:</h3>
+        {%for recipe in recipes%}
+            <a href="{{url_for('main.recipe', recipe_id=recipe.id)}}">{{recipe.title}}</a>
+            <br>
+        {%endfor%}
+        <br>
     </div>
+
     <div class="margin-bottom-md">
-    <div>
-        <h3>Followers:</h3>
-        {%for follower in user.followers%}
-        <a href="{{url_for('main.user', user_id=follower.id)}}">{{follower.name}}</a>
-        {%endfor%}
-    </div>
-    <div>
-        <h3>Follows:</h3>
-        {%for user_following in user.following%}
-        <a href="{{url_for('main.user', user_id=user_following.id)}}">{{user_following.name}}</a>
-        {%endfor%}
-    </div>
+        <div>
+            <h3>Followers:</h3>
+            {%for follower in user.followers%}
+                <a href="{{url_for('main.user', user_id=follower.id)}}">{{follower.name}}</a>
+            {%endfor%}
+        </div>
+        <div>
+            <h3>Follows:</h3>
+            {%for user_following in user.following%}
+                <a href="{{url_for('main.user', user_id=user_following.id)}}">{{user_following.name}}</a>
+            {%endfor%}
+        </div>
     </div>
 
     {% include 'components/posts_template.html' %}

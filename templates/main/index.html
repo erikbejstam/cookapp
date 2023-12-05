@@ -1,13 +1,22 @@
-{% extends 'base.html' %}
-
-{% block content %}
-{% if current_user.is_authenticated: %}
-<span>Hello, <a href="{{ url_for('main.user', user_id=current_user.id) }}">{{current_user.name}}</a>!</span> <span><a class="button" href="/logout">Logout</a></span>
+{% extends 'base.html' %} {% block content %} {% if
+current_user.is_authenticated: %}
+<span
+  >Hello,
+  <a href="{{ url_for('main.user', user_id=current_user.id) }}"
+    >{{current_user.name}}</a
+  >!</span
+>
+<span><a class="button" href="/logout">Logout</a></span>
 {% endif %}
 
-<section>
-    <h2>Your feed</h2>
-    {% include 'components/posts_template.html' %}
-</section>
-<a href="/new_post" class="button-add">+</a>
+<main>
+  <section>
+    <div>
+      {% for recipe in recipes %} {% include 'components/recipe_preview.html' %}
+      {% endfor %}
+    </div>
+  </section>
+</main>
+<a href="/new_recipe" class="button-add">+</a>
+
 {% endblock %}

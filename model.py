@@ -40,6 +40,7 @@ class User(flask_login.UserMixin, db.Model):
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime(), nullable=False)
     title = db.Column(db.String(128), nullable=False)
     description = db.Column(db.Text, nullable=False) 
     persons = db.Column(db.Integer, nullable=False)
