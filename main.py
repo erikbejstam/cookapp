@@ -39,8 +39,8 @@ def index():
         total_rating = row[1]
         current_user_id = current_user.id if current_user.is_authenticated else None
         user_vote = db.session.execute(
-            db.select(model.Rating.value).where(model.Rating.user_id == current_user_id)
-        ).scalar()
+            db.select(model.Rating.value).where(model.Rating.user_id == current_user_id).where(model.Rating.recipe_id == recipe.id)
+        ).scalar_one()
         if user_vote == None:
             user_vote = 0
 
