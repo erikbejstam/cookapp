@@ -13,8 +13,7 @@
         </div>
         {% endfor %}
       </div>
-      <div class="row">
-      <div class="col-md-10"><div class="d-flex flex-row">
+      <div class="d-flex flex-row">
         <h2 class="me-4">{{recipe[0].title}}</h2>
         <form
           action="{{url_for('main.create_bookmark', recipe_id=recipe[0].id)}}"
@@ -28,8 +27,7 @@
           ></button>
         </form>
       </div>
-      <p>{{recipe[0].description}}</p></div>
-      </div>
+      <p>{{recipe[0].description}}</p>
       <hr class="hr" />
       <div class="row">
         <div class="col-md-6 d-flex align-items-center">
@@ -70,71 +68,98 @@
       <ol class="list-unstyled">
         {% for step in recipe[0].steps %}
         <li class="mb-3">
-            <div class="card">
-                <div class="row g-0">
-                    {% if step.photos and step.photos[0] %}
-                    <div class="col-md-4">
-                        <img src="{{url_for('static', filename='photos/photo-' + step.photos[0].id|string + '.' + step.photos[0].file_extension)}}"
-                            alt="{{recipe.title}} step image"
-                            class="img-fluid rounded-start" style="object-fit: cover; max-height: 250px;">
-                    </div>
-                    <div class="col-md-8">
-                    {% else %}
-                    <div class="col-md-12">
-                    {% endif %}
-                        <div class="card-body">
-                            <p class="card-title">
-                                <strong>Step {{ step.order }}</strong>
-                            </p>
-                            <p class="card-text">{{ step.text }}</p>
-                        </div>
-                    </div>
+          <div class="card">
+            <div class="row g-0">
+              {% if step.photos and step.photos[0] %}
+              <div class="col-md-4">
+                <img
+                  src="{{url_for('static', filename='photos/photo-' + step.photos[0].id|string + '.' + step.photos[0].file_extension)}}"
+                  alt="{{recipe.title}} step image"
+                  class="img-fluid rounded-start"
+                  style="object-fit: cover; max-height: 250px"
+                />
+              </div>
+              <!-- Comment out following line to auto format-->
+              <div class="col-md-8">
+              {% else %}
+              <div class="col-md-12">
+                {% endif %}
+                <div class="card-body">
+                  <p class="card-title">
+                    <strong>Step {{ step.order }}</strong>
+                  </p>
+                  <p class="card-text">{{ step.text }}</p>
                 </div>
+              </div>
             </div>
+          </div>
         </li>
         {% endfor %}
-    </ol>    
+      </ol>
 
-    <h3 class="mt-4">You cooked it?</h3>
-    <p>Share your Masterpiece and leave your vote:</p>
-    <div class="row">
-        <form class="col-md-6" action="{{url_for('main.new_photo_post', recipe_id=recipe[0].id)}}" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <input type="file" name="photo" class="form-control" id="imageUpload" accept="image/jpeg,image/png" required>
-            </div>
-            <div class="mb-3">
-                <img id="imagePreview" src="#" alt="your image" class="img-fluid" style="display: none;"/>
-            </div>
-            <input type="submit" value="Post" class="btn btn-primary" />
-            <button type="button" id="deleteImage" class="btn btn-danger" style="display: none;">Delete Image</button>
-            
+      <h3 class="mt-4">You cooked it?</h3>
+      <p>Share your Masterpiece and leave your vote:</p>
+      <div class="row">
+        <form
+          class="col-md-6"
+          action="{{url_for('main.new_photo_post', recipe_id=recipe[0].id)}}"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="mb-3">
+            <input
+              type="file"
+              name="photo"
+              class="form-control"
+              id="imageUpload"
+              accept="image/jpeg,image/png"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <img
+              id="imagePreview"
+              src="#"
+              alt="your image"
+              class="img-fluid"
+              style="display: none"
+            />
+          </div>
+          <input type="submit" value="Post" class="btn btn-primary" />
+          <button
+            type="button"
+            id="deleteImage"
+            class="btn btn-danger"
+            style="display: none"
+          >
+            Delete Image
+          </button>
         </form>
         <div class="col-md-6">{% include 'components/voting_panel.html' %}</div>
-    </div>
-    <hr class="hr" />
-
+      </div>
+      <hr class="hr" />
     </article>
   </section>
 </main>
 
 <script>
-    $(document).ready(function() {
-        $('#imageUpload').change(function() {
-            if (this.files && this.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#imagePreview').attr('src', e.target.result).show();
-                    $('#deleteImage').show();
-                };
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-    
-        $('#deleteImage').click(function() {
-            $('#imagePreview').hide();
-            $('#imageUpload').val('');
-            $(this).hide();
-        });
+  $(document).ready(function () {
+    $("#imageUpload").change(function () {
+      if (this.files && this.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          $("#imagePreview").attr("src", e.target.result).show();
+          $("#deleteImage").show();
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
     });
+
+    $("#deleteImage").click(function () {
+      $("#imagePreview").hide();
+      $("#imageUpload").val("");
+      $(this).hide();
+    });
+  });
 </script>
 {% endblock %}
