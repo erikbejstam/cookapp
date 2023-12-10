@@ -333,18 +333,24 @@ def unfollow(user_id):
 @bp.route("/create_bookmark/<int:recipe_id>", methods=["POST"])
 @login_required
 def create_bookmark(recipe_id):
-    query = db.select(model.Recipe).where(model.Recipe.id == recipe_id)
-    recipe = db.session.execute(query).scalar()
+    bookmark_exists = False
+    for bookmark in current_user.bookmarks:
+        if bookmark.recipe_id == recipe_id:
+            db.session.delete(bookmark)
+            bookmark_exists = True
+            break
 
-    if recipe_id not in [bookmark.recipe_id for bookmark in current_user.bookmarks]:
+    if not bookmark_exists:
         bookmark = model.Bookmark(
             user_id=current_user.id,
-            recipe_id=recipe.id,
+            recipe_id=recipe_id,
         )
-        current_user.bookmarks.append(bookmark)
-        db.session.commit()
+        db.session.add(bookmark)
 
-    return redirect(url_for("main.bookmarks", user_id=current_user.id))
+    db.session.commit()
+
+    # Redirect to the previous page
+    return redirect(request.referrer or url_for("main.index"))
 
 
 @bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"])
@@ -391,8 +397,14 @@ def recipe(recipe_id):
         .where(model.Rating.recipe_id == recipe.id)
     ).scalar_one_or_none()
 
-    #user_bookmark = recipe.bookmarks.filter_by(user_id=current_user_id).first()
+    user_bookmark = False
+    for bookmark in current_user.bookmarks:
+        if bookmark.recipe_id == recipe.id:
+            user_bookmark = True
+            break
 
-    #import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
-    return render_template("main/recipe.html", recipe=(recipe, total_rating, user_vote))
+    return render_template(
+        "main/recipe.html", recipe=(recipe, total_rating, user_vote, user_bookmark)
+    )
