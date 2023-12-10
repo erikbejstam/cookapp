@@ -3,7 +3,7 @@
   <section class="container">
     <article>
       <div class="row mb-2">
-        {% for image in recipe.photos %}
+        {% for image in recipe[0].photos %}
         <div class="col-md-4 mb-3">
           <img
             src="{{url_for('static', filename='photos/photo-' + image.id|string + '.' + image.file_extension)}}"
@@ -13,11 +13,11 @@
         </div>
         {% endfor %}
       </div>
-
-      <div class="d-flex flex-row">
-        <h2 class="me-4">{{recipe.title}}</h2>
+      <div class="row">
+      <div class="col-md-10"><div class="d-flex flex-row">
+        <h2 class="me-4">{{recipe[0].title}}</h2>
         <form
-          action="{{url_for('main.create_bookmark', recipe_id=recipe.id)}}"
+          action="{{url_for('main.create_bookmark', recipe_id=recipe[0].id)}}"
           method="post"
         >
           <button
@@ -28,16 +28,17 @@
           ></button>
         </form>
       </div>
-      <p>{{recipe.description}}</p>
+      <p>{{recipe[0].description}}</p></div>
+      </div>
       <hr class="hr" />
       <div class="row">
         <div class="col-md-6 d-flex align-items-center">
           <i class="fas fa-users me-2"></i>
-          <p class="mb-0">{{recipe.persons}} Persons</p>
+          <p class="mb-0">{{recipe[0].persons}} Persons</p>
         </div>
         <div class="col-md-6 d-flex align-items-center">
           <i class="fas fa-clock me-2"></i>
-          <p class="mb-0">Estimated Time: {{recipe.estimated_time}}</p>
+          <p class="mb-0">Estimated Time: {{recipe[0].estimated_time}}</p>
         </div>
       </div>
       <hr class="hr mb-4" />
@@ -53,7 +54,7 @@
               </tr>
             </thead>
             <tbody>
-              {% for q_ingredient in recipe.q_ingredients %}
+              {% for q_ingredient in recipe[0].q_ingredients %}
               <tr>
                 <td>{{ q_ingredient.ingredient.name }}</td>
                 <td class="text-end">{{ q_ingredient.amount }}</td>
@@ -67,7 +68,7 @@
 
       <h3 class="mt-4">Steps</h3>
       <ol class="list-unstyled">
-        {% for step in recipe.steps %}
+        {% for step in recipe[0].steps %}
         <li class="mb-3">
             <div class="card">
                 <div class="row g-0">
@@ -94,20 +95,46 @@
         {% endfor %}
     </ol>    
 
-    <h3 class="mt-4">Upload your masterpiece:</h3>
-    <form
-      action="{{url_for('main.new_photo_post', recipe_id=recipe.id)}}"
-      method="post"
-      enctype="multipart/form-data">
-      <input
-        type="file"
-        name="photo"
-        class="form-control"
-        accept="image/jpeg,image/png"
-        required
-      />
-    </form>
+    <h3 class="mt-4">You cooked it?</h3>
+    <p>Share your Masterpiece and leave your vote:</p>
+    <div class="row">
+        <form class="col-md-6" action="{{url_for('main.new_photo_post', recipe_id=recipe[0].id)}}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <input type="file" name="photo" class="form-control" id="imageUpload" accept="image/jpeg,image/png" required>
+            </div>
+            <div class="mb-3">
+                <img id="imagePreview" src="#" alt="your image" class="img-fluid" style="display: none;"/>
+            </div>
+            <input type="submit" value="Post" class="btn btn-primary" />
+            <button type="button" id="deleteImage" class="btn btn-danger" style="display: none;">Delete Image</button>
+            
+        </form>
+        <div class="col-md-6">{% include 'components/voting_panel.html' %}</div>
+    </div>
+    <hr class="hr" />
+
     </article>
   </section>
 </main>
+
+<script>
+    $(document).ready(function() {
+        $('#imageUpload').change(function() {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreview').attr('src', e.target.result).show();
+                    $('#deleteImage').show();
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    
+        $('#deleteImage').click(function() {
+            $('#imagePreview').hide();
+            $('#imageUpload').val('');
+            $(this).hide();
+        });
+    });
+</script>
 {% endblock %}

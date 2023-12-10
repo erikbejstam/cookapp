@@ -371,4 +371,28 @@ def bookmarks(user_id):
 def recipe(recipe_id):
     recipe = db.get_or_404(model.Recipe, recipe_id)
 
-    return render_template("main/recipe.html", recipe=recipe)
+    query = (
+        db.select(
+            func.sum(model.Rating.value).label("total_rating"),
+        )
+        .where(recipe_id == model.Rating.recipe_id)
+        .group_by(model.Rating.recipe_id)
+    )
+
+    total_rating = db.session.execute(query).scalar_one_or_none()
+
+    # Ensure total_rating is not None
+    total_rating = total_rating if total_rating is not None else 0
+
+    current_user_id = current_user.id if current_user.is_authenticated else None
+    user_vote = db.session.execute(
+        db.select(model.Rating.value)
+        .where(model.Rating.user_id == current_user_id)
+        .where(model.Rating.recipe_id == recipe.id)
+    ).scalar_one_or_none()
+
+    #user_bookmark = recipe.bookmarks.filter_by(user_id=current_user_id).first()
+
+    #import pdb; pdb.set_trace()
+
+    return render_template("main/recipe.html", recipe=(recipe, total_rating, user_vote))
