@@ -1,12 +1,113 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
+<main class="card p-5">
+  <section class="container">
+    <article>
+      <div class="row mb-2">
+        {% for image in recipe.photos %}
+        <div class="col-md-4 mb-3">
+          <img
+            src="{{url_for('static', filename='photos/photo-' + image.id|string + '.' + image.file_extension)}}"
+            alt="{{recipe.title}} image"
+            class="img-fluid rounded"
+          />
+        </div>
+        {% endfor %}
+      </div>
 
-{% block content %}
+      <div class="d-flex flex-row">
+        <h2 class="me-4">{{recipe.title}}</h2>
+        <form
+          action="{{url_for('main.create_bookmark', recipe_id=recipe.id)}}"
+          method="post"
+        >
+          <button
+            id="bookmark"
+            name="Bookmark"
+            value="Bookmark"
+            class="btn btn-outline-danger fas fa-heart"
+          ></button>
+        </form>
+      </div>
+      <p>{{recipe.description}}</p>
+      <hr class="hr" />
+      <div class="row">
+        <div class="col-md-6 d-flex align-items-center">
+          <i class="fas fa-users me-2"></i>
+          <p class="mb-0">{{recipe.persons}} Persons</p>
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+          <i class="fas fa-clock me-2"></i>
+          <p class="mb-0">Estimated Time: {{recipe.estimated_time}}</p>
+        </div>
+      </div>
+      <hr class="hr mb-4" />
 
-    <form action="{{url_for('main.create_bookmark', recipe_id=recipe.id)}}" method="post">
-        <button id="bookmark" name="Bookmark" value="Bookmark">Bookmark</button>
+      <div class="card">
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Ingredient</th>
+                <th scope="col" class="text-end">Amount</th>
+                <th scope="col" class="text-end">Unit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for q_ingredient in recipe.q_ingredients %}
+              <tr>
+                <td>{{ q_ingredient.ingredient.name }}</td>
+                <td class="text-end">{{ q_ingredient.amount }}</td>
+                <td class="text-end">{{ q_ingredient.unit }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3 class="mt-4">Steps</h3>
+      <ol class="list-unstyled">
+        {% for step in recipe.steps %}
+        <li class="mb-3">
+            <div class="card">
+                <div class="row g-0">
+                    {% if step.photos and step.photos[0] %}
+                    <div class="col-md-4">
+                        <img src="{{url_for('static', filename='photos/photo-' + step.photos[0].id|string + '.' + step.photos[0].file_extension)}}"
+                            alt="{{recipe.title}} step image"
+                            class="img-fluid rounded-start" style="object-fit: cover; max-height: 250px;">
+                    </div>
+                    <div class="col-md-8">
+                    {% else %}
+                    <div class="col-md-12">
+                    {% endif %}
+                        <div class="card-body">
+                            <p class="card-title">
+                                <strong>Step {{ step.order }}</strong>
+                            </p>
+                            <p class="card-text">{{ step.text }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ol>    
+
+    <h3 class="mt-4">Upload your masterpiece:</h3>
+    <form
+      action="{{url_for('main.new_photo_post', recipe_id=recipe.id)}}"
+      method="post"
+      enctype="multipart/form-data">
+      <input
+        type="file"
+        name="photo"
+        class="form-control"
+        accept="image/jpeg,image/png"
+        required
+      />
     </form>
-
-    {{recipe.title}} <br>
-    {{recipe.description}} <br>
-
+    </article>
+  </section>
+</main>
 {% endblock %}

@@ -39,7 +39,9 @@ def index():
         total_rating = row[1]
         current_user_id = current_user.id if current_user.is_authenticated else None
         user_vote = db.session.execute(
-            db.select(model.Rating.value).where(model.Rating.user_id == current_user_id).where(model.Rating.recipe_id == recipe.id)
+            db.select(model.Rating.value)
+            .where(model.Rating.user_id == current_user_id)
+            .where(model.Rating.recipe_id == recipe.id)
         ).scalar_one()
         if user_vote == None:
             user_vote = 0
@@ -172,6 +174,19 @@ def rate(recipe_id):
     return redirect(request.referrer or url_for("main.index"))
 
 
+@bp.route("/new_photo/<int:recipe_id>", methods=["POST"])
+@login_required
+def new_photo_post(recipe_id):
+    if recipe_id == None:
+        abort(400, f"Please provide to what the picture refers to")
+
+    db.get_or_404(model.Recipe, recipe_id)
+
+    uploaded_file = request.files["photo"]
+    store_photo(uploaded_file, recipe_id=recipe_id)
+    return redirect(request.referrer or url_for("main.recipe", recipe_id=recipe_id))
+
+
 @bp.route("/new_recipe")
 @login_required
 def new_recipe():
@@ -287,51 +302,6 @@ def store_photo(uploaded_file, recipe_id=None, step_id=None):
     )
     uploaded_file.save(path)
     return photo
-
-
-@bp.route("/new_photo", methods=["POST"])
-@login_required
-def new_photo_post():
-    recipe_id = request.form.get("recipe_id")
-    step_id = request.form.get("step_id")
-
-    if recipe_id == None and step_id == None:
-        abort(400, f"Please provide to what the picture refers to")
-
-    uploaded_file = request.files["photo"]
-
-    if uploaded_file.filename != "":
-        abort(400, f"Please upload a media file")
-
-    content_type = uploaded_file.content_type
-    if content_type == "image/png":
-        file_extension = "png"
-    elif content_type == "image/jpeg":
-        file_extension = "jpg"
-    else:
-        abort(400, f"Unsupported file type {content_type}")
-
-    recipe = db.get_or_404(model.Recipe, recipe_id) if recipe_id != None else None
-    step = db.get_or_404(model.Step, step_id) if step_id != None else None
-    photo = model.Photo(
-        user=current_user, recipe=recipe, step=step, file_extension=file_extension
-    )
-    db.session.add(photo)
-    db.session.commit()
-
-    path = (
-        pathlib.Path(current_app.root_path)
-        / "static"
-        / "photos"
-        / f"photo-{photo.id}.{file_extension}"
-    )
-    uploaded_file.save(path)
-
-    return (
-        redirect(url_for("main.index"))  # TODO: change depending on our structure
-        if recipe_id != None
-        else redirect(url_for("main.index"))
-    )
 
 
 @bp.route("/follow/<int:user_id>", methods=["POST"])
