@@ -1,12 +1,19 @@
 /* Base Styles */
+
 body {
-  background-color: #d9d9d9;
+  background-color: #F3E9D2;
   color: #121212;
-  font-family: monospace, sans-serif;
+  font-family: 'Abhaya Libre';font-size: 22px;
   margin: auto;
   padding: 0 2.5rem;
   width: 80vw;
   font-size: 1rem;
+}
+
+#logo_image {
+  width: 100px; /* Adjust as needed */
+  height: auto; /* Keeps aspect ratio intact */
+  margin-right: 10px; /* Adds some space between the logo and the title */
 }
 
 /* Link Styles */

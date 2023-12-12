@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- required by bootstrap for responsiveness -->
     <title>Cookapp</title>
-
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/fontawesome.min.css"
@@ -37,10 +36,14 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='microblog.css') }}"
     />
+
+    <link href='https://fonts.googleapis.com/css?family=Abhaya Libre' rel='stylesheet'>
   </head>
   <body>
     <header>
-      <a href="/"><h1>Cookapp</h1></a>
+      <div id="my_logo">
+        <img src="/static/logo.png" id="logo_image" alt="Cookapp Logo">
+      </div>
     </header>
     <section class="content">{% block content %}{% endblock %}</section>
     <footer><small>Developed for Web applications</small></footer>
