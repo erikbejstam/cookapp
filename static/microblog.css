@@ -13,7 +13,6 @@ body {
 a {
   color: #dc143c;
   text-decoration: none;
-  border-bottom: 2px dotted #dc143c;
   opacity: 0.8;
   transition: opacity 0.3s; /* Specify the property you are transitioning */
 }
@@ -44,6 +43,10 @@ a:hover {
   color: whitesmoke;
   padding: 0.5rem 1rem;
   transition: opacity 0.3s;
+}
+
+.button-add{
+  background: #dc143c; /*just a suggestion*/
 }
 
 .button:hover,
@@ -149,4 +152,11 @@ a:hover {
   opacity: 1;
   background-color:#dc143c;
   border-color: #8c0520;
+}
+
+a.navbar-brand{
+  color: #dc143c;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.3s; 
 }
