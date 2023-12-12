@@ -3,7 +3,7 @@
 <form action="{{ url_for('main.rate', recipe_id=recipe[0].id) }}" method="POST">
   <div class="d-flex flex-column">
     <!-- Upvote button {{ 's' if user_has_upvoted else 'r' }} -->
-    <button name="value" value="1" type="submit" class="btn btn-light vote-btn p-3">
+    <button name="value" value="1" type="submit" class="btn btn-{{'secondary' if recipe[2] == 1 else 'light'}} vote-btn p-3">
       <i class="fas fa-chevron-up"></i>
     </button>
 
@@ -16,7 +16,7 @@
       name="value"
       value="-1"
       type="submit"
-      class="btn btn-light vote-btn p-3"
+      class="btn btn-{{'secondary' if recipe[2] == -1 else 'light'}} vote-btn p-3"
     >
       <i class="fas fa-chevron-down"></i>
     </button>

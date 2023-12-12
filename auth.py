@@ -34,9 +34,11 @@ def signup_post():
     flash("You've successfully signed up!")
     return redirect(url_for("auth.login"))
 
+
 @bp.route("/login")
 def login():
     return render_template("auth/login.html")
+
 
 @bp.route("/login", methods=["POST"])
 def login_post():
@@ -51,6 +53,7 @@ def login_post():
     else:
         flash("Invalid credentials!")
         return redirect(url_for("auth.login"))
+
 
 @bp.route("/logout")
 def logout():
