@@ -38,7 +38,16 @@ def index():
     for row in result:
         recipe = db.get_or_404(model.Recipe, row[0])
         total_rating = row[1]
-        recipes.append((recipe, total_rating))
+        current_user_id = current_user.id if current_user.is_authenticated else None
+        user_vote = db.session.execute(
+            db.select(model.Rating.value)
+            .where(model.Rating.user_id == current_user_id)
+            .where(model.Rating.recipe_id == recipe.id)
+        ).scalar_one()
+        if user_vote == None:
+            user_vote = 0
+
+        recipes.append((recipe, total_rating, user_vote))
     # import pdb; pdb.set_trace()
     if len(recipes) < 10:
         number_of_recipes = 10 - len(recipes)
@@ -51,7 +60,7 @@ def index():
         )
         rateless_recipes = db.session.execute(query).scalars().all()
         for recipe in rateless_recipes:
-            recipes.append((recipe, 0))
+            recipes.append((recipe, 0, 0))
 
     recipes.sort(key=lambda x: x[1], reverse=True)
 
@@ -153,7 +162,6 @@ def rate(recipe_id):
 
     if existing_rating != None:
         db.session.delete(existing_rating)
-        flash("Rating successfully removed!")
 
     if existing_rating == None or existing_rating.value != int(value):
         rating = model.Rating(
@@ -165,6 +173,19 @@ def rate(recipe_id):
 
     db.session.commit()
     return redirect(request.referrer or url_for("main.index"))
+
+
+@bp.route("/new_photo/<int:recipe_id>", methods=["POST"])
+@login_required
+def new_photo_post(recipe_id):
+    if recipe_id == None:
+        abort(400, f"Please provide to what the picture refers to")
+
+    db.get_or_404(model.Recipe, recipe_id)
+
+    uploaded_file = request.files["photo"]
+    store_photo(uploaded_file, recipe_id=recipe_id)
+    return redirect(request.referrer or url_for("main.recipe", recipe_id=recipe_id))
 
 
 @bp.route("/new_recipe")
@@ -284,51 +305,6 @@ def store_photo(uploaded_file, recipe_id=None, step_id=None):
     return photo
 
 
-@bp.route("/new_photo", methods=["POST"])
-@login_required
-def new_photo_post():
-    recipe_id = request.form.get("recipe_id")
-    step_id = request.form.get("step_id")
-
-    if recipe_id == None and step_id == None:
-        abort(400, f"Please provide to what the picture refers to")
-
-    uploaded_file = request.files["photo"]
-
-    if uploaded_file.filename != "":
-        abort(400, f"Please upload a media file")
-
-    content_type = uploaded_file.content_type
-    if content_type == "image/png":
-        file_extension = "png"
-    elif content_type == "image/jpeg":
-        file_extension = "jpg"
-    else:
-        abort(400, f"Unsupported file type {content_type}")
-
-    recipe = db.get_or_404(model.Recipe, recipe_id) if recipe_id != None else None
-    step = db.get_or_404(model.Step, step_id) if step_id != None else None
-    photo = model.Photo(
-        user=current_user, recipe=recipe, step=step, file_extension=file_extension
-    )
-    db.session.add(photo)
-    db.session.commit()
-
-    path = (
-        pathlib.Path(current_app.root_path)
-        / "static"
-        / "photos"
-        / f"photo-{photo.id}.{file_extension}"
-    )
-    uploaded_file.save(path)
-
-    return (
-        redirect(url_for("main.index"))  # TODO: change depending on our structure
-        if recipe_id != None
-        else redirect(url_for("main.index"))
-    )
-
-
 @bp.route("/follow/<int:user_id>", methods=["POST"])
 @login_required
 def follow(user_id):
@@ -358,18 +334,24 @@ def unfollow(user_id):
 @bp.route("/create_bookmark/<int:recipe_id>", methods=["POST"])
 @login_required
 def create_bookmark(recipe_id):
-    query = db.select(model.Recipe).where(model.Recipe.id == recipe_id)
-    recipe = db.session.execute(query).scalar()
+    bookmark_exists = False
+    for bookmark in current_user.bookmarks:
+        if bookmark.recipe_id == recipe_id:
+            db.session.delete(bookmark)
+            bookmark_exists = True
+            break
 
-    if recipe_id not in [bookmark.recipe_id for bookmark in current_user.bookmarks]:
+    if not bookmark_exists:
         bookmark = model.Bookmark(
             user_id=current_user.id,
-            recipe_id=recipe.id,
+            recipe_id=recipe_id,
         )
-        current_user.bookmarks.append(bookmark)
-        db.session.commit()
+        db.session.add(bookmark)
 
-    return redirect(url_for("main.bookmarks", user_id=current_user.id))
+    db.session.commit()
+
+    # Redirect to the previous page
+    return redirect(request.referrer or url_for("main.index"))
 
 
 @bp.route("/remove_bookmark/<int:bookmark_id>", methods=["POST"])
@@ -396,4 +378,34 @@ def bookmarks(user_id):
 def recipe(recipe_id):
     recipe = db.get_or_404(model.Recipe, recipe_id)
 
-    return render_template("main/recipe.html", recipe=recipe)
+    query = (
+        db.select(
+            func.sum(model.Rating.value).label("total_rating"),
+        )
+        .where(recipe_id == model.Rating.recipe_id)
+        .group_by(model.Rating.recipe_id)
+    )
+
+    total_rating = db.session.execute(query).scalar_one_or_none()
+
+    # Ensure total_rating is not None
+    total_rating = total_rating if total_rating is not None else 0
+
+    current_user_id = current_user.id if current_user.is_authenticated else None
+    user_vote = db.session.execute(
+        db.select(model.Rating.value)
+        .where(model.Rating.user_id == current_user_id)
+        .where(model.Rating.recipe_id == recipe.id)
+    ).scalar_one_or_none()
+
+    user_bookmark = False
+    for bookmark in current_user.bookmarks:
+        if bookmark.recipe_id == recipe.id:
+            user_bookmark = True
+            break
+
+    # import pdb; pdb.set_trace()
+
+    return render_template(
+        "main/recipe.html", recipe=(recipe, total_rating, user_vote, user_bookmark)
+    )

@@ -144,3 +144,16 @@ a:hover {
 .far {
   /* regular style (not filled) */
 }
+
+.btn-primary {
+  background-color:#dc143c;
+  border-color: #8c0520;
+  opacity: 0.9;
+  
+}
+
+.btn-primary:hover {
+  opacity: 1;
+  background-color:#dc143c;
+  border-color: #8c0520;
+}
