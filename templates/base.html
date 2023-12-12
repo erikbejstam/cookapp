@@ -32,6 +32,8 @@
       rel="stylesheet"
     />
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='microblog.css') }}"
@@ -41,8 +43,15 @@
   </head>
   <body>
     <header>
-      <div id="my_logo">
-        <img src="/static/logo.png" id="logo_image" alt="Cookapp Logo">
+      <div class="topnav" id="myTopnav">
+        <a href="#logo">
+          <img src="/static/logo.png" id="logo_image" alt="Cookapp Logo">
+        </a>
+        <a href="#home" class="activate">Home</a>
+        <a href="#login">Login</a>
+        <a href="javascript:void(0);" class="icon" onclick="myfunction()">
+          <i class="fa fa-bars"></i>
+        </a>
       </div>
     </header>
     <section class="content">{% block content %}{% endblock %}</section>

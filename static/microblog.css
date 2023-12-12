@@ -10,12 +10,54 @@ body {
   font-size: 1rem;
 }
 
-#logo_image {
-  width: 100px; /* Adjust as needed */
-  height: auto; /* Keeps aspect ratio intact */
-  margin-right: 10px; /* Adds some space between the logo and the title */
+
+/* Nav Bar Styles */
+/* Add a black background color to the top navigation */
+.topnav {
+  background-color: #feceb1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  height: 50px;
 }
 
+.topnav #logo_image {
+  height: 20%; /* Adjust as needed */
+  width: 20%; /* Keeps aspect ratio intact */
+  margin-right: 10px; /* Adds some space between the logo and the title */
+
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  display: block;
+  color: #562c02;
+  text-align: left;
+  padding: 10px 12px; 
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: bold;
+
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Add an active class to highlight the current page */
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
+/* Hide the link that should open and close the topnav on small screens */
+.topnav .icon {
+  display: none;
+}
 /* Link Styles */
 a {
   color: #dc143c;
