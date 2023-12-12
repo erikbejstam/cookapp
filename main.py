@@ -15,6 +15,7 @@ from flask import (
 from sqlalchemy import func
 from . import model, db
 import re
+from sqlalchemy import func 
 
 bp = Blueprint("main", __name__)
 

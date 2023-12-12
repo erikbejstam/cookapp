@@ -1,15 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login at M Microblogging</h2>
+<h2>Login at 'Taste and Share'</h2>
 <form action="{{ url_for('auth.login') }}" method="post">
     <div><label>Email: <input type="email" name="email" required /></label></div>
     <div><label>Password: <input type="password" name="password" required /></label></div>
     <div><input type="submit" value="Login" /></div>
 </form>
+
+
 {% with messages = get_flashed_messages() %}
-    {% for message in messages %}
-        <div class="alert">{{ message }}</div>
-    {% endfor %}
+    {% if messages %}
+        <script type="text/javascript">
+        alert('{{ messages[0] }}');
+        </script>
+    {% endif %}
 {% endwith %}
+
+
+<hr>
+
+
+<h3>Aren't you a memeber yet?</h3>
+<p><a href="{{ url_for('auth.signup') }}">Sign up here</a> and enjoy the joy of tasting and sharing </p>
 {% endblock %}
