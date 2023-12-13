@@ -12,31 +12,43 @@ body {
 
 
 /* Nav Bar Styles */
-/* Add a black background color to the top navigation */
-.topnav {
-  background-color: #feceb1;
-  overflow: hidden;
+
+.navbar-collapse {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  height: auto;
-  padding: 10px 0;
+  justify-content: center; 
+  align-items: center; 
+  position: absolute; 
+  bottom: 10px; 
+  left: 80%; 
+  transform: translateX(-50%); 
+  width: 100%; 
 }
 
-.welcome-container {
-  display: flex; 
-  flex-direction: column; 
-  align-items: flex-start;
-  font-size: 30px; 
-  margin-right: auto;
+.welcome-message{
+  font-size: 25px;
+  font-weight: bolder;
+  text-align: end;
 }
 
-.account-options {
+#options {
   display: flex;
-  align-items: flex-start;
-  margin-top: 5px; 
-  font-size: 20px;
+  justify-content: space-around; 
+  align-items: center; 
+  width: 100%; 
 }
+.login-link {
+  font-size: 25px;
+  font-weight: bolder;
+}
+.nav-link {
+  display: block;
+  padding: 5px 15px; 
+}
+
+
+
+
+
 
 
 /* Link Styles */
