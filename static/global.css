@@ -104,7 +104,9 @@ a:hover {
 /* Message and Alert Styles */
 .message,
 .alert {
-  background-color: #383838;
+  background-color: #FFC300;
+  color:#121212;
+  font-weight: bold;
   border-radius: 1rem;
   margin-bottom: 1rem;
   padding: 2rem;
