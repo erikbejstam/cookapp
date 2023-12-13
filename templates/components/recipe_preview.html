@@ -25,6 +25,16 @@
               </a>
               <span class="date">{{ recipe[0].timestamp }}</span>
             </div>
+            <form
+              action="{{url_for('main.create_bookmark', recipe_id=recipe[0].id)}}"
+              method="post">
+              <button
+                id="bookmark"
+                name="Bookmark"
+                value="Bookmark"
+                class="btn btn-{{'danger' if recipe[3] else 'outline-danger'}} fas fa-heart">
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -33,3 +43,24 @@
     <div class="col-md-3 p-4">{% include 'components/voting_panel.html' %}</div>
   </div>
 </article>
+
+<script>
+  $(document).ready(function () {
+    $("#imageUpload").change(function () {
+      if (this.files && this.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          $("#imagePreview").attr("src", e.target.result).show();
+          $("#deleteImage").show();
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+
+    $("#deleteImage").click(function () {
+      $("#imagePreview").hide();
+      $("#imageUpload").val("");
+      $(this).hide();
+    });
+  });
+</script>
