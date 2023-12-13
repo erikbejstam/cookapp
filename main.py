@@ -173,6 +173,16 @@ def user(user_id):
 
     recipes.sort(key=lambda x: x[1], reverse=True)
 
+    follow = "none"
+    if current_user.id == user.id:
+        follow = "none"
+    elif current_user not in user.followers:
+        follow = "follow"
+    elif current_user in user.followers:
+        follow = "unfollow"
+    else:
+        follow = "none"
+
     return render_template(
         "main/user.html",
         user=user,
@@ -253,7 +263,6 @@ def new_recipe_post():
     ingredient_names = request.form.getlist("ingredient_name[]")
     ingredient_quantities = request.form.getlist("ingredient_quantity[]")
     ingredient_units = request.form.getlist("ingredient_unit[]")
-    print(ingredient_names)
     ingredients = zip(ingredient_names, ingredient_quantities, ingredient_units)
 
     for ingredient_name, ingredient_quantity, ingredient_unit in ingredients:
@@ -276,9 +285,7 @@ def new_recipe_post():
     step_texts = request.form.getlist("step_text[]")
     step_photos = extract_step_photos(request)
 
-    print(step_texts)
     steps = zip(step_orders, step_texts)
-    print(steps)
 
     current_step = 0
     for step_order, step_text in steps:
