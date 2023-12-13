@@ -5,7 +5,6 @@ from flask_login import current_user, login_required
 from flask import (
     Blueprint,
     current_app,
-    flash,
     render_template,
     redirect,
     request,
@@ -15,7 +14,7 @@ from flask import (
 from sqlalchemy import func
 from . import model, db
 import re
-from sqlalchemy import func 
+from sqlalchemy import func
 
 bp = Blueprint("main", __name__)
 
@@ -48,7 +47,6 @@ def index():
             user_vote = 0
 
         recipes.append((recipe, total_rating, user_vote))
-    # import pdb; pdb.set_trace()
     if len(recipes) < 10:
         number_of_recipes = 10 - len(recipes)
         query = (
@@ -66,6 +64,7 @@ def index():
 
     return render_template("main/index.html", recipes=recipes)
 
+
 @bp.route("/user/<int:user_id>")
 @login_required
 def user(user_id):
@@ -79,7 +78,7 @@ def user(user_id):
         follow = "unfollow"
     else:
         follow = "none"
-    
+
     query = (
         db.select(
             model.Recipe.id,
@@ -100,11 +99,15 @@ def user(user_id):
         recipe = db.get_or_404(model.Recipe, row[0])
         total_rating = row[1]
         current_user_id = current_user.id if current_user.is_authenticated else None
-        user_vote = db.session.execute(
-            db.select(model.Rating.value)
-            .where(model.Rating.user_id == current_user_id)
-            .where(model.Rating.recipe_id == recipe.id)
-        ).scalars().one_or_none()
+        user_vote = (
+            db.session.execute(
+                db.select(model.Rating.value)
+                .where(model.Rating.user_id == current_user_id)
+                .where(model.Rating.recipe_id == recipe.id)
+            )
+            .scalars()
+            .one_or_none()
+        )
         if user_vote == None:
             user_vote = 0
         if total_rating == None:
@@ -118,7 +121,6 @@ def user(user_id):
         recipes=recipes,
         follow_button=follow,
     )
-
 
 
 @bp.route("/post/<int:message_id>")
@@ -136,7 +138,6 @@ def post(message_id):
     )
     answers = db.session.execute(query).scalars().all()
     return render_template("main/post.html", post=message, posts=answers)
-
 
 
 @bp.route("/rate/<int:recipe_id>", methods=["POST"])
