@@ -56,28 +56,28 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
           {% if current_user.is_authenticated %}
+            <!-- Existing code for authenticated users -->
             <li class="nav-item welcome-container">
-              <a class="nav-link" href="{{ url_for('main.user', user_id=current_user.id) }}">Welcome, {{current_user.name}} &#128516;</a>
+              <a class="nav-link" href="{{ url_for('main.user', user_id=current_user.id) }}">Welcome, {{ current_user.name }} &#128516;</a>
               <div class="account-options">
                 <a class="nav-link" href="#">Settings</a>
                 <a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a>
               </div>
             </li>
-<<<<<<< HEAD
-          {% else %}
-            <li class="nav-item welcome-container">
-              <div class="account-options">
-                <a class="nav-link" href="{{ url_for('auth.login')}}">Login</a>
-              </div>
-=======
             <li class="nav-item active">
-              <a class="nav-link" href="{{url_for('main.bookmarks', user_id=current_user.id)}}">Bookmarks</a>
+              <a class="nav-link" href="{{ url_for('main.bookmarks', user_id=current_user.id) }}">Bookmarks</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a>
->>>>>>> 5a257cc8c851129235c105eba24ff159186616f5
+            </li>
+          {% else %}
+            <!-- Code for non-authenticated users -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
             </li>
           {% endif %}
+        </ul>
+      </div>
         </ul>
       </div>
       
