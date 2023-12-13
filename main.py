@@ -366,14 +366,12 @@ def bookmarks(user_id):
             func.sum(model.Rating.value).label("total_rating"),
         )
         .join_from(model.Recipe, model.Rating, isouter=True)
-        .where(model.Recipe.user_id == user_id)
         .group_by(model.Recipe.id)
-        .order_by(func.sum(model.Rating.value).desc())
-        .limit(10)
+        .join(model.Bookmark)
     )
 
     result = db.session.execute(query)
-
+   
     recipes = []
     for row in result:
         print(row)
@@ -391,8 +389,7 @@ def bookmarks(user_id):
             total_rating = 0
 
         recipes.append((recipe, total_rating, user_vote))
-    # query = db.select(model.Bookmark).where(user.id == user_id)
-    # bookmarks = db.session.execute(query).scalars().all()
+        print(recipes)
 
     return render_template("main/bookmarks.html", recipes=recipes)
 
