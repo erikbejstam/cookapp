@@ -181,3 +181,7 @@ a:hover {
   font-weight: bolder;
   font-size: 15px;
 }
+
+.card-title{
+  padding-right: 10px;
+}
