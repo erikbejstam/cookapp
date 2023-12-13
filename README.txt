@@ -25,6 +25,7 @@ Additional features:
 - You can delete the image of your version of the dish. 
 - Follow/unfollow functionality
 - Display number of followers/following
+- User uploads are shown in the recipe view nicely as additional pictures
 
 
 
