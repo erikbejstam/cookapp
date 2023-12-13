@@ -3,14 +3,10 @@
 {% block content %}
     <h2>Bookmarks</h2>
 
-    {% for bookmark in bookmarks %}
+    {% for recipe in recipes %}
 
-        <a href="{{ url_for('main.recipe', recipe_id=bookmark.recipe.id) }}">{{bookmark.recipe.title}}</a> 
-
-        <form action="{{url_for('main.remove_bookmark', bookmark_id=bookmark.id)}}" method="post">
-            <input class="btn btn-danger" type="submit" value="Remove bookmark">
-        </form>  
-        <br>
+        {%include   'components/recipe_preview.html'%}
+        <br> 
         
     {% endfor %} <br><br>
 
