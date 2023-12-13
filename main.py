@@ -101,7 +101,7 @@ def index():
         )
         .group_by(model.Rating.recipe_id)
         .order_by(func.sum(model.Rating.value).desc())
-        .limit(10)
+        .limit(60)
     )
 
     result = db.session.execute(query)
@@ -110,10 +110,16 @@ def index():
     for row in result:
         recipe = db.get_or_404(model.Recipe, row[0])
         total_rating = row[1]
-        current_user_id = current_user.id if current_user.is_authenticated else None
-        user_vote = get_user_vote(recipe.id, current_user_id)
 
-        recipes.append((recipe, total_rating, user_vote))
+        user_vote = 0
+        user_bookmark = False
+        if current_user.is_authenticated:
+            current_user_id = current_user.id
+            user_vote = get_user_vote(recipe.id, current_user_id)
+            user_bookmark = get_user_bookmark(recipe.id, current_user_id)
+
+        recipes.append((recipe, total_rating, user_vote, user_bookmark))
+
     if len(recipes) < 10:
         number_of_recipes = 10 - len(recipes)
         query = (
@@ -125,7 +131,13 @@ def index():
         )
         rateless_recipes = db.session.execute(query).scalars().all()
         for recipe in rateless_recipes:
-            recipes.append((recipe, 0, 0))
+            user_vote = 0
+            user_bookmark = False
+            if current_user.is_authenticated:
+                current_user_id = current_user.id
+                user_vote = get_user_vote(recipe.id, current_user_id)
+                user_bookmark = get_user_bookmark(recipe.id, current_user_id)
+            recipes.append((recipe, 0, user_vote, user_bookmark))
 
     recipes.sort(key=lambda x: x[1], reverse=True)
 
@@ -145,17 +157,19 @@ def user(user_id):
         .limit(60)
     )
 
-    result = db.session.execute(query)
+    result = db.session.execute(query).scalars().all()
 
     recipes = []
-    for row in result:
-        total_rating = get_total_rating(row[0].id)
-        recipe = db.get_or_404(model.Recipe, row[0].id)
+    for recipe in result:
+        total_rating = get_total_rating(recipe.id)
         user_vote = 0
+        user_bookmark = False
         if current_user.is_authenticated:
-            user_vote = get_user_vote(recipe.id, current_user.id)
+            current_user_id = current_user.id
+            user_vote = get_user_vote(recipe.id, current_user_id)
+            user_bookmark = get_user_bookmark(recipe.id, current_user_id)
 
-        recipes.append((recipe, total_rating, user_vote))
+        recipes.append((recipe, total_rating, user_vote, user_bookmark))
 
     recipes.sort(key=lambda x: x[1], reverse=True)
 
@@ -326,8 +340,6 @@ def create_bookmark(recipe_id):
         db.session.add(bookmark)
 
     db.session.commit()
-
-    # Redirect to the previous page
     return redirect(request.referrer or url_for("main.index"))
 
 
@@ -343,33 +355,24 @@ def remove_bookmark(bookmark_id):
 @bp.route("/bookmarks/<int:user_id>")
 @login_required
 def bookmarks(user_id):
-    user = db.get_or_404(model.User, user_id)
+    db.get_or_404(model.User, user_id)
     if current_user.id != user_id:
         abort(403, "Forbidden action")
-    query = (
-        db.select(
-            model.Recipe.id,
-            func.sum(model.Rating.value).label("total_rating"),
-        )
-        .join_from(model.Recipe, model.Rating, isouter=True)
-        .group_by(model.Recipe.id)
-        .join(model.Bookmark)
-    )
+    query = db.select(
+        model.Bookmark.recipe_id,
+    ).where(model.Bookmark.user_id == user_id)
 
     result = db.session.execute(query)
-   
+
     recipes = []
     for row in result:
-        print(row)
-        recipe = db.get_or_404(model.Recipe, row[0])
-        total_rating = row[1]
-        current_user_id = current_user.id if current_user.is_authenticated else None
-        user_vote = get_user_vote(recipe.id, current_user_id)
-        if total_rating == None:
-            total_rating = 0
+        recipe = db.get_or_404(model.Recipe, row.recipe_id)
+        total_rating = get_total_rating(recipe.id)
+        user_vote = get_user_vote(recipe.id, user_id)
+        user_bookmark = get_user_bookmark(recipe.id, user_id)
+        recipes.append((recipe, total_rating, user_vote, user_bookmark))
 
-        recipes.append((recipe, total_rating, user_vote))
-
+    recipes.sort(key=lambda x: x[1], reverse=True)
     return render_template("main/bookmarks.html", recipes=recipes)
 
 
