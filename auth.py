@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from . import db, bcrypt
 import flask_login
+from flask_login import current_user
 
 
 from . import model
@@ -10,7 +11,10 @@ bp = Blueprint("auth", __name__)
 
 @bp.route("/signup")
 def signup():
-    return render_template("auth/signup.html")
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index"))
+    else:
+        return render_template("auth/signup.html")
 
 
 @bp.route("/signup", methods=["POST"])
@@ -38,7 +42,10 @@ def signup_post():
 
 @bp.route("/login")
 def login():
-    return render_template("auth/login.html")
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index"))
+    else:
+        return render_template("auth/login.html")
 
 
 @bp.route("/login", methods=["POST"])
