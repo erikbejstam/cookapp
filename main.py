@@ -69,9 +69,7 @@ def index():
 @bp.route("/user/<int:user_id>")
 @login_required
 def user(user_id):
-    print(user_id)
     user = db.get_or_404(model.User, user_id)
-    print("exists")
     follow = "none"
     if current_user.id == user.id:
         follow = "none"
@@ -93,7 +91,6 @@ def user(user_id):
         .order_by(func.sum(model.Rating.value).desc())
         .limit(10)
     )
-    print(query)
 
     result = db.session.execute(query)
 
@@ -110,10 +107,11 @@ def user(user_id):
         ).scalars().one_or_none()
         if user_vote == None:
             user_vote = 0
+        if total_rating == None:
+            total_rating = 0
 
         recipes.append((recipe, total_rating, user_vote))
-
-    print("Before rendering templkate", len(recipes))
+        
     return render_template(
         "main/user.html",
         user=user,
@@ -364,10 +362,12 @@ def bookmarks(user_id):
         abort(403, "Forbidden action")
     query = (
         db.select(
-            model.Rating.recipe_id,
+            model.Recipe.id,
             func.sum(model.Rating.value).label("total_rating"),
         )
-        .group_by(model.Rating.recipe_id)
+        .join_from(model.Recipe, model.Rating, isouter=True)
+        .where(model.Recipe.user_id == user_id)
+        .group_by(model.Recipe.id)
         .order_by(func.sum(model.Rating.value).desc())
         .limit(10)
     )
@@ -376,6 +376,7 @@ def bookmarks(user_id):
 
     recipes = []
     for row in result:
+        print(row)
         recipe = db.get_or_404(model.Recipe, row[0])
         total_rating = row[1]
         current_user_id = current_user.id if current_user.is_authenticated else None
@@ -383,25 +384,13 @@ def bookmarks(user_id):
             db.select(model.Rating.value)
             .where(model.Rating.user_id == current_user_id)
             .where(model.Rating.recipe_id == recipe.id)
-        ).scalar_one()
+        ).scalars().one_or_none()
         if user_vote == None:
             user_vote = 0
+        if total_rating == None:
+            total_rating = 0
 
         recipes.append((recipe, total_rating, user_vote))
-    if len(recipes) < 10:
-        number_of_recipes = 10 - len(recipes)
-        query = (
-            db.select(model.Recipe)
-            .outerjoin(model.Rating)
-            .where(model.Rating.recipe_id == None)
-            .order_by(model.Recipe.timestamp.desc())
-            .limit(number_of_recipes)
-        )
-        rateless_recipes = db.session.execute(query).scalars().all()
-        for recipe in rateless_recipes:
-            recipes.append((recipe, 0, 0))
-
-    recipes.sort(key=lambda x: x[1], reverse=True)
     # query = db.select(model.Bookmark).where(user.id == user_id)
     # bookmarks = db.session.execute(query).scalars().all()
 
