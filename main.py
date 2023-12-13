@@ -392,8 +392,3 @@ def recipe(recipe_id):
         "main/recipe.html", recipe=(recipe, total_rating, user_vote, user_bookmark)
     )
 
-def getDaysAgo(date):
-    today=datetime.datetime.now()
-    daysAgo=today-date
-    return daysAgo
-

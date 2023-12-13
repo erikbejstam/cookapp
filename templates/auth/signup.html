@@ -1,17 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Sign Up for <strong>Taste and Share</strong></h2>
+<hr>
+<h2>Sign up</h2>
 {% with messages = get_flashed_messages() %}
     {% for message in messages %}
-        <div class="alert">{{ message }}</div>
+        <div class="alert alert-dismissible fade show alert-success" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     {% endfor %}
 {% endwith %}
-<form action="{{ url_for('auth.signup') }}" method="post">
-    <div><label>Email: <input type="email" name="email" required /></label></div>
-    <div><label>Display Name: <input type="text" name="username" required /></label></div>
-    <div><label>Password: <input type="password" name="password" required /></label></div>
-    <div><label>Repeat password: <input type="password" name="password_repeat" required /></label></div>
-    <div><input type="submit" value="Sign Up" /></div>
+
+<form class="mt-4" action="{{ url_for('auth.signup') }}" method="post">
+    <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" name="email" class="form-control" id="email" required />
+    </div>
+    <div class="mb-3">
+        <label for="username" class="form-label">Display Name:</label>
+        <input type="text" name="username" class="form-control" id="username" required />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <input type="password" name="password" class="form-control" id="password" required />
+    </div>
+    <div class="mb-3">
+        <label for="password_repeat" class="form-label">Repeat Password:</label>
+        <input type="password" name="password_repeat" class="form-control" id="password_repeat" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Sign Up</button>
 </form>
+<br>
 {% endblock %}

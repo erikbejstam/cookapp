@@ -1,26 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- Bootstrap Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="loginModalLabel">Login at 'Taste and Share'</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ url_for('auth.login') }}" method="post">
-                    <div><label>Email: <input type="email" name="email" required /></label></div>
-                    <div><label>Password: <input type="password" name="password" required /></label></div>
-                    <input type="hidden" name="next" value="{{ request.referrer }}">
-                    <div><input type="submit" value="Login" /></div>
-                </form>
-            <hr>
-                <h3>Aren't you a member yet?</h3>
-                <p><a href="{{ url_for('auth.signup') }}">Sign up here</a> and enjoy the joy of tasting and sharing </p>
+<h2>Login at 'Taste and Share'</h2>
+<form class="mt-4" action="{{ url_for('auth.login') }}" method="post">
+    <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" name="email" class="form-control" id="email" required />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password:</label>
+        <input type="password" name="password" class="form-control" id="password" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
 
             </div>
         </div>
@@ -40,12 +32,9 @@
   {% endif %}
 {% endwith %}
 
-<!-- 
-<script>
-// Automatically show the modal when the page loads
-$(document).ready(function() {
-    $('#loginModal').modal('show');
-});
-</script> -->
+<hr>
 
+
+<h3>Aren't you a memeber yet?</h3>
+<p><a href="{{ url_for('auth.signup') }}">Sign up here</a> and experience the joy of tasting and sharing!</p>
 {% endblock %}
