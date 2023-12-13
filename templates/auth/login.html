@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login at 'Taste and Share'</h2>
+<hr />
+<h2>Login</h2>
 <form class="mt-4" action="{{ url_for('auth.login') }}" method="post">
     <div class="mb-3">
         <label for="email" class="form-label">Email:</label>
