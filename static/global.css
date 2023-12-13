@@ -12,28 +12,18 @@ body {
 }
 
 #logo_image {
-  width: 100px; /* Adjust as needed */
+  width: 40%; /* Adjust as needed */
   height: auto; /* Keeps aspect ratio intact */
   border-bottom: none;
 }
 
 /* Nav Bar Styles */
 
-.navbar-collapse {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  bottom: 10px;
-  left: 80%;
-  transform: translateX(-50%);
-  width: 100%;
-}
-
 .welcome-message {
   font-size: 25px;
   font-weight: bolder;
   text-align: end;
+  margin-bottom: 1rem;
 }
 
 #options {
@@ -41,14 +31,6 @@ body {
   justify-content: space-around;
   align-items: center;
   width: 100%;
-}
-.login-link {
-  font-size: 25px;
-  font-weight: bolder;
-}
-.nav-link {
-  display: block;
-  padding: 5px 15px;
 }
 
 /* Link Styles */

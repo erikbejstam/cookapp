@@ -65,24 +65,19 @@
               >
               <div class="account-options" id="options">
                 <a
-                  class="nav-link bookmarks-link"
+                  class="btn btn-primary d-flex align-items-center me-3"
                   href="{{ url_for('main.bookmarks', user_id=current_user.id) }}"
-                  >My Bookmarks</a
+                  ><i class="fas fa-heart me-1"></i>My Bookmarks</a
                 >
                 <a
-                  class="nav-link user-page-link"
-                  href="{{ url_for('main.user', user_id=current_user.id) }}"
-                  >My Page</a
-                >
-                <a
-                  class="nav-link upload-recipe-link"
+                  class="btn btn-primary d-flex align-items-center me-3"
                   href="{{ url_for('main.new_recipe', user_id=current_user.id) }}"
-                  >Upload Your Recipe</a
+                  ><i class="fas fa-plus me-1"></i>Upload Your Recipe</a
                 >
                 <a
-                  class="nav-link logout-link"
+                  class="btn btn-outline-secondary d-flex align-items-center"
                   href="{{ url_for('auth.logout')}}"
-                  >Logout</a
+                  ><i class="fas fa-right-from-bracket me-1"></i>Logout</a
                 >
               </div>
             </li>
