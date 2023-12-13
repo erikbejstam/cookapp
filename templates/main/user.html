@@ -21,16 +21,12 @@
 
     <div>
         <h2>Recipes by {{user.name}}</h2>
-        {%for recipe in recipes%}
             <div>
-              {% for recipe in recipes %} 
-                {% include 'components/recipe_preview.html' %}
-              {% endfor %}
+                {% for recipe in recipes %} 
+                    {% include 'components/recipe_preview.html' %}
+                {% endfor %}
             </div>
-        {%endfor%}
         <br>
     </div>
-
-    {% include 'components/posts_template.html' %}
 </section>
 {% endblock %}

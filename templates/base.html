@@ -37,62 +37,64 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
 
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='global.css') }}"
     />
 
-    <link href='https://fonts.googleapis.com/css?family=Abhaya Libre' rel='stylesheet'>
+    <link
+      href="https://fonts.googleapis.com/css?family=Abhaya Libre"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
     <header>
-    </header>
-    
-    <nav class="navbar navbar-expand-lg" >
-      
-      <a href="/"><img src="/static/logo.png" id="logo_image" alt="Cookapp Logo"></a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          {% if current_user.is_authenticated %}
+      <nav class="navbar">
+        <div class="container-fluid">
+          <a href="/"
+            ><img src="/static/logo.png" id="logo_image" alt="Cookapp Logo"
+          /></a>
+          <ul class="list-unstyled">
+            {% if current_user.is_authenticated %}
             <li class="nav-item welcome-container">
-              <a class="nav-link welcome-message" href="{{ url_for('main.user', user_id=current_user.id) }}">Welcome, {{ current_user.name }} &#128516;</a>
+              <a
+                class="nav-link welcome-message"
+                href="{{ url_for('main.user', user_id=current_user.id) }}"
+                >Welcome, {{ current_user.name }} &#128516;</a
+              >
               <div class="account-options" id="options">
-                <a class="nav-link bookmarks-link" href="{{ url_for('main.bookmarks', user_id=current_user.id) }}">My Bookmarks</a>
-                <a class="nav-link user-page-link" href="{{ url_for('main.user', user_id=current_user.id) }}">My Page</a>
-                <a class="nav-link upload-recipe-link" href="{{ url_for('main.new_recipe', user_id=current_user.id) }}">Upload Your Recipe</a>
-                <a class="nav-link logout-link" href="{{ url_for('auth.logout')}}">Logout</a>
+                <a
+                  class="nav-link bookmarks-link"
+                  href="{{ url_for('main.bookmarks', user_id=current_user.id) }}"
+                  >My Bookmarks</a
+                >
+                <a
+                  class="nav-link user-page-link"
+                  href="{{ url_for('main.user', user_id=current_user.id) }}"
+                  >My Page</a
+                >
+                <a
+                  class="nav-link upload-recipe-link"
+                  href="{{ url_for('main.new_recipe', user_id=current_user.id) }}"
+                  >Upload Your Recipe</a
+                >
+                <a
+                  class="nav-link logout-link"
+                  href="{{ url_for('auth.logout')}}"
+                  >Logout</a
+                >
               </div>
             </li>
-          {% else %}
+            {% else %}
             <li class="nav-item">
-              <a class="nav-link login-link" href="#" onclick="openLoginModal()">Login</a>
+              <a class="nav-link login-link" href="{{ url_for('auth.login') }}" id="loginLink">Login</a>
             </li>
-            <div id="loginModalContainer"></div>
-            <script>
-              function openLoginModal() {
-                  $.ajax({
-                      url: "{{ url_for('auth.login') }}", // Adjust this if your login URL is different
-                      type: 'GET',
-                      success: function(response) {
-                          // Load the login modal HTML into the placeholder div
-                          $('#loginModalContainer').html(response);
-                          // Show the modal
-                          $('#loginModal').modal('show');
-                      },
-                      error: function(error) {
-                          console.log(error);
-                      }
-                  });
-              }
-              </script>
-              
           {% endif %}
         </ul>
       </div>
@@ -103,14 +105,13 @@
 
       </div>
     </nav>
-
-
+    
     <hr>
 
     <section class="content">{% block content %}{% endblock %}</section>
-    
+
     <footer><small>Developed for Web applications</small></footer>
-    
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
@@ -124,5 +125,4 @@
 
 
   </body>
-
 </html>

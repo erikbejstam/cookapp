@@ -5,7 +5,6 @@ from flask_login import current_user, login_required
 from flask import (
     Blueprint,
     current_app,
-    flash,
     render_template,
     redirect,
     request,
@@ -15,9 +14,82 @@ from flask import (
 from sqlalchemy import func
 from . import model, db
 import re
-from sqlalchemy import func 
+from sqlalchemy import func
 
 bp = Blueprint("main", __name__)
+
+
+def get_user_vote(recipe_id, user_id):
+    return (
+        db.session.execute(
+            db.select(model.Rating.value)
+            .where(model.Rating.user_id == user_id)
+            .where(model.Rating.recipe_id == recipe_id)
+        ).scalar_one_or_none()
+        or 0
+    )
+
+
+def get_user_bookmark(recipe_id, user_id):
+    return (
+        db.session.execute(
+            db.select(model.Bookmark)
+            .where(model.Bookmark.user_id == user_id)
+            .where(model.Bookmark.recipe_id == recipe_id)
+        ).scalar_one_or_none()
+        or 0
+    )
+
+
+def get_total_rating(recipe_id):
+    query = (
+        db.select(func.sum(model.Rating.value).label("total_rating"))
+        .where(model.Rating.recipe_id == recipe_id)
+        .group_by(model.Rating.recipe_id)
+    )
+    return db.session.execute(query).scalar_one_or_none() or 0
+
+
+def extract_step_photos(request):
+    step_photos = {}
+    for key in request.files.keys():
+        if key.startswith("step_photo["):
+            file = request.files[key]
+            if file.filename != "":
+                number = re.search(r"\d+", key).group()
+                step_photos[number] = file
+    return step_photos
+
+
+def store_photo(uploaded_file, recipe_id=None, step_id=None):
+    if not uploaded_file:
+        abort(400, f"Please upload a media file")
+
+    content_type = uploaded_file.content_type
+    if content_type == "image/png":
+        file_extension = "png"
+    elif content_type == "image/jpeg":
+        file_extension = "jpg"
+    else:
+        abort(400, f"Unsupported file type {content_type}")
+
+    photo = model.Photo(
+        user=current_user,
+        recipe_id=recipe_id,
+        step_id=step_id,
+        file_extension=file_extension,
+    )
+    db.session.add(photo)
+    db.session.commit()
+
+    path = (
+        pathlib.Path(current_app.root_path)
+        / "static"
+        / "photos"
+        / f"photo-{photo.id}.{file_extension}"
+    )
+    uploaded_file.save(path)
+    return photo
 
 
 @bp.route("/")
@@ -29,7 +101,7 @@ def index():
         )
         .group_by(model.Rating.recipe_id)
         .order_by(func.sum(model.Rating.value).desc())
-        .limit(10)
+        .limit(60)
     )
 
     result = db.session.execute(query)
@@ -38,17 +110,16 @@ def index():
     for row in result:
         recipe = db.get_or_404(model.Recipe, row[0])
         total_rating = row[1]
-        current_user_id = current_user.id if current_user.is_authenticated else None
-        user_vote = db.session.execute(
-            db.select(model.Rating.value)
-            .where(model.Rating.user_id == current_user_id)
-            .where(model.Rating.recipe_id == recipe.id)
-        ).scalar_one_or_none()
-        if user_vote == None:
-            user_vote = 0
 
-        recipes.append((recipe, total_rating, user_vote))
-    # import pdb; pdb.set_trace()
+        user_vote = 0
+        user_bookmark = False
+        if current_user.is_authenticated:
+            current_user_id = current_user.id
+            user_vote = get_user_vote(recipe.id, current_user_id)
+            user_bookmark = get_user_bookmark(recipe.id, current_user_id)
+
+        recipes.append((recipe, total_rating, user_vote, user_bookmark))
+
     if len(recipes) < 10:
         number_of_recipes = 10 - len(recipes)
         query = (
@@ -60,85 +131,54 @@ def index():
         )
         rateless_recipes = db.session.execute(query).scalars().all()
         for recipe in rateless_recipes:
-            recipes.append((recipe, 0, 0))
+            user_vote = 0
+            user_bookmark = False
+            if current_user.is_authenticated:
+                current_user_id = current_user.id
+                user_vote = get_user_vote(recipe.id, current_user_id)
+                user_bookmark = get_user_bookmark(recipe.id, current_user_id)
+            recipes.append((recipe, 0, user_vote, user_bookmark))
 
     recipes.sort(key=lambda x: x[1], reverse=True)
 
     return render_template("main/index.html", recipes=recipes)
 
+
 @bp.route("/user/<int:user_id>")
 @login_required
 def user(user_id):
-    print(user_id)
     user = db.get_or_404(model.User, user_id)
-    print("exists")
-    follow = "none"
-    if current_user.id == user.id:
-        follow = "none"
-    elif current_user not in user.followers:
-        follow = "follow"
-    elif current_user in user.followers:
-        follow = "unfollow"
-    else:
-        follow = "none"
-    
+
     query = (
         db.select(
-            model.Recipe.id,
-            func.sum(model.Rating.value).label("total_rating"),
+            model.Recipe,
         )
-        .join_from(model.Recipe, model.Rating, isouter=True)
         .where(model.Recipe.user_id == user_id)
-        .group_by(model.Recipe.id)
-        .order_by(func.sum(model.Rating.value).desc())
-        .limit(10)
+        .limit(60)
     )
-    print(query)
 
-    result = db.session.execute(query)
+    result = db.session.execute(query).scalars().all()
 
     recipes = []
-    for row in result:
-        print(row)
-        recipe = db.get_or_404(model.Recipe, row[0])
-        total_rating = row[1]
-        current_user_id = current_user.id if current_user.is_authenticated else None
-        user_vote = db.session.execute(
-            db.select(model.Rating.value)
-            .where(model.Rating.user_id == current_user_id)
-            .where(model.Rating.recipe_id == recipe.id)
-        ).scalars().one_or_none()
-        if user_vote == None:
-            user_vote = 0
+    for recipe in result:
+        total_rating = get_total_rating(recipe.id)
+        user_vote = 0
+        user_bookmark = False
+        if current_user.is_authenticated:
+            current_user_id = current_user.id
+            user_vote = get_user_vote(recipe.id, current_user_id)
+            user_bookmark = get_user_bookmark(recipe.id, current_user_id)
 
-        recipes.append((recipe, total_rating, user_vote))
+        recipes.append((recipe, total_rating, user_vote, user_bookmark))
 
-    print("Before rendering templkate", len(recipes))
+    recipes.sort(key=lambda x: x[1], reverse=True)
+
     return render_template(
         "main/user.html",
         user=user,
         recipes=recipes,
         follow_button=follow,
     )
-
-
-
-@bp.route("/post/<int:message_id>")
-@login_required
-def post(message_id):
-    message = db.get_or_404(model.Message, message_id)
-    if message.response_to_id != None:
-        abort(403, "Forbidden action")
-    # if not message:
-    #     abort(404, "Post id {} doesn't exist.".format(message_id))
-    query = (
-        db.select(model.Message)
-        .filter_by(response_to_id=message_id)
-        .order_by(model.Message.timestamp.desc())
-    )
-    answers = db.session.execute(query).scalars().all()
-    return render_template("main/post.html", post=message, posts=answers)
-
 
 
 @bp.route("/rate/<int:recipe_id>", methods=["POST"])
@@ -256,48 +296,6 @@ def new_recipe_post():
     return redirect(url_for("main.index"))
 
 
-def extract_step_photos(request):
-    step_photos = {}
-    for key in request.files.keys():
-        if key.startswith("step_photo["):
-            file = request.files[key]
-            if file.filename != "":
-                number = re.search(r"\d+", key).group()
-                step_photos[number] = file
-    return step_photos
-
-
-def store_photo(uploaded_file, recipe_id=None, step_id=None):
-    if not uploaded_file:
-        abort(400, f"Please upload a media file")
-
-    content_type = uploaded_file.content_type
-    if content_type == "image/png":
-        file_extension = "png"
-    elif content_type == "image/jpeg":
-        file_extension = "jpg"
-    else:
-        abort(400, f"Unsupported file type {content_type}")
-
-    photo = model.Photo(
-        user=current_user,
-        recipe_id=recipe_id,
-        step_id=step_id,
-        file_extension=file_extension,
-    )
-    db.session.add(photo)
-    db.session.commit()
-
-    path = (
-        pathlib.Path(current_app.root_path)
-        / "static"
-        / "photos"
-        / f"photo-{photo.id}.{file_extension}"
-    )
-    uploaded_file.save(path)
-    return photo
-
-
 @bp.route("/follow/<int:user_id>", methods=["POST"])
 @login_required
 def follow(user_id):
@@ -342,8 +340,6 @@ def create_bookmark(recipe_id):
         db.session.add(bookmark)
 
     db.session.commit()
-
-    # Redirect to the previous page
     return redirect(request.referrer or url_for("main.index"))
 
 
@@ -359,52 +355,24 @@ def remove_bookmark(bookmark_id):
 @bp.route("/bookmarks/<int:user_id>")
 @login_required
 def bookmarks(user_id):
-    user = db.get_or_404(model.User, user_id)
+    db.get_or_404(model.User, user_id)
     if current_user.id != user_id:
         abort(403, "Forbidden action")
-    query = (
-        db.select(
-            model.Rating.recipe_id,
-            func.sum(model.Rating.value).label("total_rating"),
-        )
-        .group_by(model.Rating.recipe_id)
-        .order_by(func.sum(model.Rating.value).desc())
-        .limit(10)
-    )
+    query = db.select(
+        model.Bookmark.recipe_id,
+    ).where(model.Bookmark.user_id == user_id)
 
     result = db.session.execute(query)
 
     recipes = []
     for row in result:
-        recipe = db.get_or_404(model.Recipe, row[0])
-        total_rating = row[1]
-        current_user_id = current_user.id if current_user.is_authenticated else None
-        user_vote = db.session.execute(
-            db.select(model.Rating.value)
-            .where(model.Rating.user_id == current_user_id)
-            .where(model.Rating.recipe_id == recipe.id)
-        ).scalar_one()
-        if user_vote == None:
-            user_vote = 0
-
-        recipes.append((recipe, total_rating, user_vote))
-    if len(recipes) < 10:
-        number_of_recipes = 10 - len(recipes)
-        query = (
-            db.select(model.Recipe)
-            .outerjoin(model.Rating)
-            .where(model.Rating.recipe_id == None)
-            .order_by(model.Recipe.timestamp.desc())
-            .limit(number_of_recipes)
-        )
-        rateless_recipes = db.session.execute(query).scalars().all()
-        for recipe in rateless_recipes:
-            recipes.append((recipe, 0, 0))
+        recipe = db.get_or_404(model.Recipe, row.recipe_id)
+        total_rating = get_total_rating(recipe.id)
+        user_vote = get_user_vote(recipe.id, user_id)
+        user_bookmark = get_user_bookmark(recipe.id, user_id)
+        recipes.append((recipe, total_rating, user_vote, user_bookmark))
 
     recipes.sort(key=lambda x: x[1], reverse=True)
-    # query = db.select(model.Bookmark).where(user.id == user_id)
-    # bookmarks = db.session.execute(query).scalars().all()
-
     return render_template("main/bookmarks.html", recipes=recipes)
 
 
@@ -412,34 +380,20 @@ def bookmarks(user_id):
 def recipe(recipe_id):
     recipe = db.get_or_404(model.Recipe, recipe_id)
 
-    query = (
-        db.select(
-            func.sum(model.Rating.value).label("total_rating"),
-        )
-        .where(recipe_id == model.Rating.recipe_id)
-        .group_by(model.Rating.recipe_id)
-    )
-
-    total_rating = db.session.execute(query).scalar_one_or_none()
-
-    # Ensure total_rating is not None
-    total_rating = total_rating if total_rating is not None else 0
-
-    current_user_id = current_user.id if current_user.is_authenticated else None
-    user_vote = db.session.execute(
-        db.select(model.Rating.value)
-        .where(model.Rating.user_id == current_user_id)
-        .where(model.Rating.recipe_id == recipe.id)
-    ).scalar_one_or_none()
-
+    total_rating = get_total_rating(recipe.id)
+    user_vote = 0
     user_bookmark = False
-    for bookmark in current_user.bookmarks:
-        if bookmark.recipe_id == recipe.id:
-            user_bookmark = True
-            break
-
-    # import pdb; pdb.set_trace()
+    if current_user.is_authenticated:
+        current_user_id = current_user.id
+        user_vote = get_user_vote(recipe.id, current_user_id)
+        user_bookmark = get_user_bookmark(recipe.id, current_user_id)
 
     return render_template(
         "main/recipe.html", recipe=(recipe, total_rating, user_vote, user_bookmark)
     )
+
+def getDaysAgo(date):
+    today=datetime.datetime.now()
+    daysAgo=today-date
+    return daysAgo
+
