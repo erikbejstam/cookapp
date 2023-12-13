@@ -15,17 +15,8 @@
       </div>
       <div class="d-flex flex-row">
         <h2 class="me-4">{{recipe[0].title}}</h2>
-        <form
-          action="{{url_for('main.create_bookmark', recipe_id=recipe[0].id)}}"
-          method="post"
-        >
-          <button
-            id="bookmark"
-            name="Bookmark"
-            value="Bookmark"
-            class="btn btn-{{'danger' if recipe[3] else 'outline-danger'}} fas fa-heart"
-          ></button>
-        </form>
+        {% include 'components/bookmark_button.html' %}
+       
       </div>
       <p>{{recipe[0].description}}</p>
       <hr class="hr" />
@@ -40,7 +31,7 @@
         </div>
       </div>
       <hr class="hr mb-4" />
-
+      
       <div class="card">
         <div class="card-body">
           <table class="table">
