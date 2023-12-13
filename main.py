@@ -43,7 +43,7 @@ def index():
             db.select(model.Rating.value)
             .where(model.Rating.user_id == current_user_id)
             .where(model.Rating.recipe_id == recipe.id)
-        ).scalar_one()
+        ).scalar_one_or_none()
         if user_vote == None:
             user_vote = 0
 
@@ -139,33 +139,6 @@ def post(message_id):
     answers = db.session.execute(query).scalars().all()
     return render_template("main/post.html", post=message, posts=answers)
 
-
-@bp.route("/new_post")
-@login_required
-def new_post():
-    return render_template("main/new_post.html")
-
-
-@bp.route("/new_post", methods=["POST"])
-@login_required
-def new_post_post():
-    text = request.form.get("text")
-    response_to_id = request.form.get("response_to")
-    message = model.Message(
-        text=text,
-        user=current_user,
-        timestamp=datetime.datetime.now(dateutil.tz.tzlocal()),
-        response_to_id=response_to_id,
-    )
-    if response_to_id != None:
-        db.get_or_404(model.Message, response_to_id)
-    db.session.add(message)
-    db.session.commit()
-    return (
-        redirect(url_for("main.post", message_id=message.response_to_id))
-        if response_to_id != None
-        else redirect(url_for("main.post", message_id=message.id))
-    )
 
 
 @bp.route("/rate/<int:recipe_id>", methods=["POST"])
