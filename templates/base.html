@@ -51,7 +51,7 @@
     <header>
     </header>
     
-    <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+    <nav class="navbar navbar-expand-lg" >
       
       <a href="/"><img src="/static/logo.png" id="logo_image" alt="Cookapp Logo"></a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,8 +72,27 @@
             </li>
           {% else %}
             <li class="nav-item">
-              <a class="nav-link login-link" href="#" data-toggle="modal" data-target="#loginModal" id="loginLink">Login</a>
+              <a class="nav-link login-link" href="#" onclick="openLoginModal()">Login</a>
             </li>
+            <div id="loginModalContainer"></div>
+            <script>
+              function openLoginModal() {
+                  $.ajax({
+                      url: "{{ url_for('auth.login') }}", // Adjust this if your login URL is different
+                      type: 'GET',
+                      success: function(response) {
+                          // Load the login modal HTML into the placeholder div
+                          $('#loginModalContainer').html(response);
+                          // Show the modal
+                          $('#loginModal').modal('show');
+                      },
+                      error: function(error) {
+                          console.log(error);
+                      }
+                  });
+              }
+              </script>
+              
           {% endif %}
         </ul>
       </div>
@@ -85,39 +104,7 @@
       </div>
     </nav>
 
-    <!-- Modal Structure for Login Form -->
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="loginModalLabel">Login</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <!-- Login Form Inside Modal -->
-            <form action="{{ url_for('auth.login') }}" method="post">
-              <div class="form-group">
-                <label for="email">Email address:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-              </div>
-              <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-              </div>
-              <button type="submit" class="btn btn-primary">Login</button>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <p>Not a member? <a href="{{ url_for('auth.signup') }}">Sign up now</a></p>
-          </div>
-        </div>
-      </div>
-    </div>
 
-
-    
     <hr>
 
     <section class="content">{% block content %}{% endblock %}</section>

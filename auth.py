@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from . import db, bcrypt
 import flask_login
 
+
 from . import model
 
 bp = Blueprint("auth", __name__)
@@ -25,13 +26,13 @@ def signup_post():
     query = db.select(model.User).where(model.User.email == email)
     user = db.session.execute(query).scalar_one_or_none()
     if user:
-        flash("Sorry, invalid email!")
+        flash("Sorry, invalid email! &#128549;")
         return redirect(url_for("auth.signup"))
     password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
     new_user = model.User(email=email, name=username, password=password_hash)
     db.session.add(new_user)
     db.session.commit()
-    flash("You've successfully signed up!")
+    flash("You've successfully signed up! &#128522")
     return redirect(url_for("auth.login"))
 
 
@@ -49,7 +50,10 @@ def login_post():
     user = db.session.execute(query).scalar_one_or_none()
     if user and bcrypt.check_password_hash(user.password, password):
         flask_login.login_user(user)
-        return redirect(url_for("main.index"))
+        next_page = request.form.get('next')
+        if not next_page or url_for('auth.login') in next_page:
+            next_page = url_for("main.index")
+        return redirect(next_page)
     else:
         flash("Invalid credentials!")
         return redirect(url_for("auth.login"))
