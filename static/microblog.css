@@ -17,47 +17,28 @@ body {
   background-color: #feceb1;
   overflow: hidden;
   display: flex;
-  align-items: center;
-  justify-content: start;
-  height: 50px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  height: auto;
+  padding: 10px 0;
 }
 
-.topnav #logo_image {
-  height: 20%; /* Adjust as needed */
-  width: 20%; /* Keeps aspect ratio intact */
-  margin-right: 10px; /* Adds some space between the logo and the title */
-
+.welcome-container {
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-start;
+  font-size: 30px; 
+  margin-right: auto;
 }
 
-/* Style the links inside the navigation bar */
-.topnav a {
-  float: left;
-  display: block;
-  color: #562c02;
-  text-align: left;
-  padding: 10px 12px; 
-  text-decoration: none;
-  font-size: 17px;
-  font-weight: bold;
-
+.account-options {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 5px; 
+  font-size: 20px;
 }
 
-/* Change the color of links on hover */
-.topnav a:hover {
-  background-color: #ddd;
-  color: black;
-}
 
-/* Add an active class to highlight the current page */
-.topnav a.active {
-  background-color: #04AA6D;
-  color: white;
-}
-
-/* Hide the link that should open and close the topnav on small screens */
-.topnav .icon {
-  display: none;
-}
 /* Link Styles */
 a {
   color: #dc143c;

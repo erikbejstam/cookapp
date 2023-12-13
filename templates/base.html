@@ -55,23 +55,24 @@
     
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          {%if current_user.is_authenticated %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.user', user_id=current_user.id) }}">{{current_user.name}}</a>
+          {% if current_user.is_authenticated %}
+            <li class="nav-item welcome-container">
+              <a class="nav-link" href="{{ url_for('main.user', user_id=current_user.id) }}">Welcome, {{current_user.name}} &#128516;</a>
+              <div class="account-options">
+                <a class="nav-link" href="#">Settings</a>
+                <a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a>
+              </div>
             </li>
-          {%endif%}
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Settings</a>
-          </li>
-          {%if current_user.is_authenticated%}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a>
+          {% else %}
+            <li class="nav-item welcome-container">
+              <div class="account-options">
+                <a class="nav-link" href="{{ url_for('auth.login')}}">Login</a>
+              </div>
             </li>
-          {%else%}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('auth.login')}}">Login</a>
-            </li>
-          {%endif%}
+          {% endif %}
+        </ul>
+      </div>
+      
         </ul>
 
       </div>
