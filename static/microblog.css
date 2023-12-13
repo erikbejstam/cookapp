@@ -128,9 +128,9 @@ a:hover {
 /* Form and Header Styles */
 .form-answer,
 .header-user {
-  display: flex;
+  display: flex; 
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1px;
 }
 
 .thumb-recipe img {
@@ -189,4 +189,14 @@ a.navbar-brand{
   text-decoration: none;
   opacity: 0.8;
   transition: opacity 0.3s; 
+}
+
+.followers{
+  padding-bottom:20px;
+}
+
+.follow-number{
+  color:#dc143c;
+  font-weight: bolder;
+  font-size: 15px;
 }

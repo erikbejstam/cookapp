@@ -63,11 +63,19 @@
                 <a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a>
               </div>
             </li>
+<<<<<<< HEAD
           {% else %}
             <li class="nav-item welcome-container">
               <div class="account-options">
                 <a class="nav-link" href="{{ url_for('auth.login')}}">Login</a>
               </div>
+=======
+            <li class="nav-item active">
+              <a class="nav-link" href="{{url_for('main.bookmarks', user_id=current_user.id)}}">Bookmarks</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.logout')}}">Logout</a>
+>>>>>>> 5a257cc8c851129235c105eba24ff159186616f5
             </li>
           {% endif %}
         </ul>
