@@ -88,20 +88,13 @@
             </li>
             {% else %}
             <li class="nav-item">
-              <a class="nav-link login-link" href="{{ url_for('auth.login') }}" id="loginLink">Login</a>
+              <a class="btn btn-primary" href="{{ url_for('auth.login') }}" >Login</a>
             </li>
           {% endif %}
         </ul>
       </div>
-        </ul>
-      </div>
-      
-        </ul>
-
-      </div>
     </nav>
     
-    <hr>
 
     <section class="content">{% block content %}{% endblock %}</section>
 
