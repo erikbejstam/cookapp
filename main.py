@@ -71,18 +71,6 @@ def index():
 @login_required
 def user(user_id):
     user = db.get_or_404(model.User, user_id)
-    query = (
-        db.select(model.Message)
-        .filter_by(user_id=user_id, response_to_id=None)
-        .order_by(model.Message.timestamp.desc())
-    )
-    user_posts = db.session.execute(query).scalars().all()
-    query_recipes = (
-        db.select(model.Recipe)
-        .filter_by(user_id=user_id)
-        .order_by(model.Recipe.timestamp.desc())
-    )
-    user_recipes = db.session.execute(query_recipes).scalars().all()
 
     follow = "none"
     if current_user.id == user.id:
@@ -93,14 +81,55 @@ def user(user_id):
         follow = "unfollow"
     else:
         follow = "none"
+    
+    query = (
+        db.select(
+            model.Rating.recipe_id,
+            func.sum(model.Rating.value).label("total_rating"),
+        )
+        .group_by(model.Rating.recipe_id)
+        .order_by(func.sum(model.Rating.value).desc())
+        .limit(10)
+    )
+
+    result = db.session.execute(query)
+
+    recipes = []
+    for row in result:
+        recipe = db.get_or_404(model.Recipe, row[0])
+        total_rating = row[1]
+        current_user_id = current_user.id if current_user.is_authenticated else None
+        user_vote = db.session.execute(
+            db.select(model.Rating.value)
+            .where(model.Rating.user_id == current_user_id)
+            .where(model.Rating.recipe_id == recipe.id)
+        ).scalar_one()
+        if user_vote == None:
+            user_vote = 0
+        
+        recipes.append((recipe, total_rating, user_vote))
+    if len(recipes) < 10:
+        number_of_recipes = 10 - len(recipes)
+        query = (
+            db.select(model.Recipe)
+            .outerjoin(model.Rating)
+            .where(model.Rating.recipe_id == None)
+            .order_by(model.Recipe.timestamp.desc())
+            .limit(number_of_recipes)
+        )
+        rateless_recipes = db.session.execute(query).scalars().all()
+        for recipe in rateless_recipes:
+            recipes.append((recipe, 0, 0))
+
+    recipes.sort(key=lambda x: x[1], reverse=True)
 
     return render_template(
         "main/user.html",
         user=user,
-        recipes=user_recipes,
-        posts=user_posts,
+        recipes=recipes,
         follow_button=follow,
     )
+
 
 
 @bp.route("/post/<int:message_id>")
@@ -119,33 +148,6 @@ def post(message_id):
     answers = db.session.execute(query).scalars().all()
     return render_template("main/post.html", post=message, posts=answers)
 
-
-@bp.route("/new_post")
-@login_required
-def new_post():
-    return render_template("main/new_post.html")
-
-
-@bp.route("/new_post", methods=["POST"])
-@login_required
-def new_post_post():
-    text = request.form.get("text")
-    response_to_id = request.form.get("response_to")
-    message = model.Message(
-        text=text,
-        user=current_user,
-        timestamp=datetime.datetime.now(dateutil.tz.tzlocal()),
-        response_to_id=response_to_id,
-    )
-    if response_to_id != None:
-        db.get_or_404(model.Message, response_to_id)
-    db.session.add(message)
-    db.session.commit()
-    return (
-        redirect(url_for("main.post", message_id=message.response_to_id))
-        if response_to_id != None
-        else redirect(url_for("main.post", message_id=message.id))
-    )
 
 
 @bp.route("/rate/<int:recipe_id>", methods=["POST"])

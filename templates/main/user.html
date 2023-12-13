@@ -3,7 +3,7 @@
 {% block content %}
 <section>
     <div class="header-user">
-        <h2><a>{{user.name}}</a>'s page</h2>
+        <h2>{{user.name}}</h2>
         {% if follow_button == "follow" %}
             <form action="{{ url_for('main.follow', user_id=user.id) }}" method="post">
                 <input class="button-reply" type="submit" value="Follow">
@@ -14,31 +14,21 @@
             </form>
         {% endif %}
     </div>
-    <div><a href="{{url_for('main.bookmarks', user_id=user.id)}}">Bookmarks</a></div>
-    <br>
-
-    <div>
-        <h3>{{user.name}}'s Recipes:</h3>
-        {%for recipe in recipes%}
-            <a href="{{url_for('main.recipe', recipe_id=recipe.id)}}">{{recipe.title}}</a>
-            <br>
-        {%endfor%}
-        <br>
+    <div class="followers">
+        <span><span class="follow-number">{{ user.followers | length }}</span> Followers</span>
+        <span><span class="follow-number">{{ user.following | length }}</span> Following </span>
     </div>
 
-    <div class="margin-bottom-md">
-        <div>
-            <h3>Followers:</h3>
-            {%for follower in user.followers%}
-                <a href="{{url_for('main.user', user_id=follower.id)}}">{{follower.name}}</a>
-            {%endfor%}
-        </div>
-        <div>
-            <h3>Follows:</h3>
-            {%for user_following in user.following%}
-                <a href="{{url_for('main.user', user_id=user_following.id)}}">{{user_following.name}}</a>
-            {%endfor%}
-        </div>
+    <div>
+        <h2>Recipes by {{user.name}}</h2>
+        {%for recipe in recipes%}
+            <div>
+              {% for recipe in recipes %} 
+                {% include 'components/recipe_preview.html' %}
+              {% endfor %}
+            </div>
+        {%endfor%}
+        <br>
     </div>
 
     {% include 'components/posts_template.html' %}

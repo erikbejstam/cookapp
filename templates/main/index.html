@@ -1,22 +1,14 @@
-{% extends 'base.html' %} {% block content %} {% if
-current_user.is_authenticated: %}
-<span
-  >Hello,
-  <a href="{{ url_for('main.user', user_id=current_user.id) }}"
-    >{{current_user.name}}</a
-  >!</span
->
-<span><a class="button" href="/logout">Logout</a></span>
-{% endif %}
+{% extends 'base.html' %} {% block content %} 
 
 <main>
   <section>
+    
     <div>
-      {% for recipe in recipes %} {% include 'components/recipe_preview.html' %}
-      {% endfor %}
+        {% for recipe in recipes %} {% include 'components/recipe_preview.html' %}
+        {% endfor %}
     </div>
   </section>
 </main>
-<a href="/new_recipe" class="button-add">+</a>
+<a href="/new_recipe" class="button-add">+</a> 
 
 {% endblock %}

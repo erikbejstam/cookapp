@@ -16,11 +16,50 @@ body {
   border-bottom: none;
 }
 
+/* Nav Bar Styles */
+
+.navbar-collapse {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  position: absolute; 
+  bottom: 10px; 
+  left: 80%; 
+  transform: translateX(-50%); 
+  width: 100%; 
+}
+
+.welcome-message{
+  font-size: 25px;
+  font-weight: bolder;
+  text-align: end;
+}
+
+#options {
+  display: flex;
+  justify-content: space-around; 
+  align-items: center; 
+  width: 100%; 
+}
+.login-link {
+  font-size: 25px;
+  font-weight: bolder;
+}
+.nav-link {
+  display: block;
+  padding: 5px 15px; 
+}
+
+
+
+
+
+
+
 /* Link Styles */
 a {
   color: #dc143c;
   text-decoration: none;
-  border-bottom: 2px dotted #dc143c;
   opacity: 0.8;
   transition: opacity 0.3s; /* Specify the property you are transitioning */
 }
@@ -51,6 +90,10 @@ a:hover {
   color: whitesmoke;
   padding: 0.5rem 1rem;
   transition: opacity 0.3s;
+}
+
+.button-add{
+  background: #dc143c; /*just a suggestion*/
 }
 
 .button:hover,
@@ -102,9 +145,9 @@ a:hover {
 /* Form and Header Styles */
 .form-answer,
 .header-user {
-  display: flex;
+  display: flex; 
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1px;
 }
 
 .thumb-recipe img {
@@ -117,32 +160,8 @@ a:hover {
 /* Rating Panel */
 /* voting_panel.css */
 
-.vote-btn i {
-  /* default style for arrows */
-}
-
-.vote-btn:hover i {
-  /* style when hovered */
-}
-
-.fa-chevron-up {
-  /* style for up arrow */
-}
-
-.fa-chevron-down {
-  /* style for down arrow */
-}
-
 .fa {
   font-size: 24px; /* adjust size as necessary */
-}
-
-.fas {
-  /* solid style (filled) */
-}
-
-.far {
-  /* regular style (not filled) */
 }
 
 .btn-primary {
@@ -156,4 +175,21 @@ a:hover {
   opacity: 1;
   background-color:#dc143c;
   border-color: #8c0520;
+}
+
+a.navbar-brand{
+  color: #dc143c;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.3s; 
+}
+
+.followers{
+  padding-bottom:20px;
+}
+
+.follow-number{
+  color:#dc143c;
+  font-weight: bolder;
+  font-size: 15px;
 }
