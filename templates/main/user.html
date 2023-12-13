@@ -1,32 +1,39 @@
-{% extends 'base.html' %}
-
-{% block content %}
+{% extends 'base.html' %} {% block content %}
+<hr />
 <section>
-    <div class="header-user">
-        <h2>{{user.name}}</h2>
-        {% if follow_button == "follow" %}
-            <form action="{{ url_for('main.follow', user_id=user.id) }}" method="post">
-                <input class="button-reply" type="submit" value="Follow">
-            </form>
-        {% elif follow_button == "unfollow" %}
-            <form action="{{ url_for('main.unfollow', user_id=user.id) }}" method="post">
-                <input class="unfollow_button" type="submit" value="Unfollow">
-            </form>
-        {% endif %}
-    </div>
-    <div class="followers">
-        <span><span class="follow-number">{{ user.followers | length }}</span> Followers</span>
-        <span><span class="follow-number">{{ user.following | length }}</span> Following </span>
-    </div>
+  <div class="header-user">
+    <h2>{{user.name}}</h2>
+    {% if follow_button == "follow" %}
+    <form action="{{ url_for('main.follow', user_id=user.id) }}" method="post">
+      <input class="button-reply" type="submit" value="Follow" />
+    </form>
+    {% elif follow_button == "unfollow" %}
+    <form
+      action="{{ url_for('main.unfollow', user_id=user.id) }}"
+      method="post"
+    >
+      <input class="unfollow_button" type="submit" value="Unfollow" />
+    </form>
+    {% endif %}
+  </div>
+  <div class="followers">
+    <span
+      ><span class="follow-number">{{ user.followers | length }}</span>
+      Followers</span
+    >
+    <span
+      ><span class="follow-number">{{ user.following | length }}</span>
+      Following
+    </span>
+  </div>
 
+  <div class="mt-3">
+    <h2>Recipes by {{user.name}}</h2>
     <div>
-        <h2>Recipes by {{user.name}}</h2>
-            <div>
-                {% for recipe in recipes %} 
-                    {% include 'components/recipe_preview.html' %}
-                {% endfor %}
-            </div>
-        <br>
+      {% for recipe in recipes %} {% include 'components/recipe_preview.html' %}
+      {% endfor %}
     </div>
+    <br />
+  </div>
 </section>
 {% endblock %}

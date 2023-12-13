@@ -14,15 +14,23 @@
     <button type="submit" class="btn btn-primary">Login</button>
 </form>
 
+            </div>
+        </div>
+    </div>
+</div>
 
 {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <script type="text/javascript">
-        alert('{{ messages[0] }}');
-        </script>
-    {% endif %}
+  {% if messages %}
+    <script type="text/javascript">
+      $(document).ready(function() {
+        // Show the login modal
+        $('#loginModal').modal('show');
+        // Display the message in an alert or inside the modal
+        alert('{{ messages[0] }}'); // Or insert into a modal element
+      });
+    </script>
+  {% endif %}
 {% endwith %}
-
 
 <hr>
 

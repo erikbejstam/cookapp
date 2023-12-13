@@ -17,9 +17,7 @@
               <a href="{{url_for('main.recipe', recipe_id=recipe[0].id)}}" class="recipe-link">
                 <h2 class="card-title mb-0 mr-3">{{ recipe[0].title}}</h2>
               </a>
-              <form action="{{url_for('main.create_bookmark', recipe_id=recipe[0].id)}}" method="post">
-                <button id="bookmark" name="Bookmark" value="Bookmark" class="btn btn-outline-danger fas fa-heart"></button>
-              </form>
+              {% include 'components/bookmark_button.html' %}
             </div>
             <div class="metadata">
               <a href="{{ url_for('main.user', user_id=recipe[0].user.id) }}">

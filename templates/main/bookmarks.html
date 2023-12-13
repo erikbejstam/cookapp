@@ -1,15 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
+<hr />
+<h2>Bookmarks</h2>
 
-{% block content %}
-    <h2>Bookmarks</h2>
+{% for recipe in recipes %} {%include 'components/recipe_preview.html'%}
+<br />
 
-    {% for recipe in recipes %}
-
-        {%include   'components/recipe_preview.html'%}
-        <br> 
-        
-    {% endfor %} <br><br>
-
+{% endfor %} <br /><br />
 
 {% endblock %}
-
