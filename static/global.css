@@ -13,7 +13,7 @@ body {
 #logo_image {
   width: 100px; /* Adjust as needed */
   height: auto; /* Keeps aspect ratio intact */
-  margin-right: 10px; /* Adds some space between the logo and the title */
+  border-bottom: none;
 }
 
 /* Link Styles */

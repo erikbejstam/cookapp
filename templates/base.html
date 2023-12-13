@@ -34,16 +34,16 @@
 
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='microblog.css') }}"
+      href="{{ url_for('static', filename='global.css') }}"
     />
 
     <link href='https://fonts.googleapis.com/css?family=Abhaya Libre' rel='stylesheet'>
   </head>
   <body>
     <header>
-      <div id="my_logo">
+      <a href="/" id="logo_image">
         <img src="/static/logo.png" id="logo_image" alt="Cookapp Logo">
-      </div>
+      </a>
     </header>
     <section class="content">{% block content %}{% endblock %}</section>
     <footer><small>Developed for Web applications</small></footer>

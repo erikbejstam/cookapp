@@ -43,7 +43,7 @@ def index():
             db.select(model.Rating.value)
             .where(model.Rating.user_id == current_user_id)
             .where(model.Rating.recipe_id == recipe.id)
-        ).scalar_one()
+        ).scalar_one_or_none()
         if user_vote == None:
             user_vote = 0
 
