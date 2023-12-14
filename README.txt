@@ -1,5 +1,5 @@
 Taste and Share 
-by:
+
 Erik Kiessig 100518034
 Min Jegal 100517384
 Erik Bejstam 100518211
