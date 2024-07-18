@@ -17,10 +17,10 @@ def create_app(test_config=None):
     app = Flask(__name__)
 
     # A secret for signing session cookies
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+    app.config["SECRET_KEY"] = "73892174893zhewjkfaz34789q247r238hr3298"
 
     # Database connection
-    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqldb://cookapp:bQcmD26UwRwurPA58X4nbz7u4QzzChmE@localhost/cookapp" #os.environ.get("DB_CONNECTION_URL") 
+    app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+mysqldb://24_webapp_042:ktvB.,ek@mysql.lab.it.uc3m.es/24_webapp_042c" #os.environ.get("DB_CONNECTION_URL") 
     db.init_app(app)
 
     login_manager = LoginManager()
