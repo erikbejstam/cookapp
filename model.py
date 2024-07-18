@@ -125,7 +125,7 @@ class Message(db.Model):
     response_to_id = db.Column(db.Integer, db.ForeignKey("message.id"))
     response_to = db.relationship(
         "Message", back_populates="responses", remote_side=[id]
-    )
+    )   
     responses = db.relationship(
         "Message", back_populates="response_to", remote_side=[response_to_id]
     )
