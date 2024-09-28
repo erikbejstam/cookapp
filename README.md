@@ -1,5 +1,5 @@
 # Cookapp
-Taste and Share 
+This is the final project in the course Web Applications at Universidad Carlos III de Madrid - a neat web app for recipes, called "Taste and Share".
 
 - Erik Kiessig 100518034
 - Min Jegal 100517384
